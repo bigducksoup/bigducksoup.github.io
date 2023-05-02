@@ -1,0 +1,731 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.JPG">
+  <link rel="icon" href="/img/avatar.JPG">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="鸭粥">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="MinIO 介绍使用MinIO 介绍MinIO 是一款基于Go语言发开的高性能、分布式的对象存储系统。客户端支持Java,Net,Python,Javacript, Golang语言。 MinIO 英文官网 MinIO 中文官网 注意：中文官方更新不及时，会有很多坑，请以英文官网为准。 基础概念1、Object：存储到minio的基本对象，如文件，字节流，Anything。。。。 2、Bucket">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MinIO 介绍使用">
+<meta property="og:url" content="http://example.com/2023/05/02/MinIo/index.html">
+<meta property="og:site_name" content="鸭粥的Blog">
+<meta property="og:description" content="MinIO 介绍使用MinIO 介绍MinIO 是一款基于Go语言发开的高性能、分布式的对象存储系统。客户端支持Java,Net,Python,Javacript, Golang语言。 MinIO 英文官网 MinIO 中文官网 注意：中文官方更新不及时，会有很多坑，请以英文官网为准。 基础概念1、Object：存储到minio的基本对象，如文件，字节流，Anything。。。。 2、Bucket">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-02T10:00:20.000Z">
+<meta property="article:modified_time" content="2023-05-02T11:38:24.903Z">
+<meta property="article:author" content="鸭粥">
+<meta property="article:tag" content="MinIo">
+<meta property="article:tag" content="tips">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>MinIO 介绍使用 - 鸭粥的Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鸭粥的Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MinIO 介绍使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-02 18:00" pubdate>
+          2023年5月2日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          21k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          176 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MinIO 介绍使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="MinIO-介绍使用"><a href="#MinIO-介绍使用" class="headerlink" title="MinIO 介绍使用"></a>MinIO 介绍使用</h1><h1 id="MinIO-介绍"><a href="#MinIO-介绍" class="headerlink" title="MinIO 介绍"></a>MinIO 介绍</h1><p>MinIO 是一款基于Go语言发开的高性能、分布式的对象存储系统。客户端支持Java,Net,Python,Javacript, Golang语言。</p>
+<p><a target="_blank" rel="noopener" href="https://docs.min.io/">MinIO 英文官网</a> <a target="_blank" rel="noopener" href="http://docs.minio.org.cn/docs/">MinIO 中文官网</a> 注意：中文官方更新不及时，会有很多坑，请以英文官网为准。</p>
+<h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><p>1、Object：存储到minio的基本对象，如文件，字节流，Anything。。。。</p>
+<p>2、Bucket：用来存储Object的逻辑空间。每个Bucket之间的数据是互相隔离的。对于客户端而言，就相当于存放文件的顶层文件夹。</p>
+<p>3、Drlve：存储数据的磁盘，在MinIO启动时，以参数的方式传入。MinIO中所有的对象数据都会存在Drive里。</p>
+<p>4、Set：即一组 Drive的集合，分布式部署根据集群规模自动划分一个或者多个Set，每个Set中的Drive 分布在不同位置。一个对象存储在一个Set上。</p>
+<p>4.1、一个对象存储在一个Set上。</p>
+<p>4.2、一个集群划分为多个Set。</p>
+<p>4.3、一个Set包含的Drive数量是固定的，默认由系统根据集群规模自动计算得出。</p>
+<p>4.4、一个Set中的drive 尽可能分布在不同的节点上。</p>
+<p>5、纠删码：Minio 使用纠删码机制来保证高可靠性。</p>
+<p>5.1、使用highwayhash来处理数据损坏（Bit Rot Protectio）。关于纠删码，简单来说就是可以通过数学计算，把丢失的数据进行还原。</p>
+<p>5.2、纠删码是恢复丢失和算怀数据的数学算法，minio采用reed-solomincode将对象拆分成N&#x2F;2数据和N&#x2F;2奇偶校验块。这就意味着如果是12块盘，一个对象会被分成6个数据快、6个奇偶校验块，你可以丢失任意6块盘（不管其存放的是数据块还是奇偶校验块），你任可以从剩下的盘中的数据进行恢复。</p>
+<p>5.2、纠删码模式，把数据分成 DATA BLOCk：数据块、 PARITY BLOCK：校验块。一个BLOCK 10M左右，如果一个文件小于10M，就以文件大小进行分块。如果一个文件大于10m，就以10M为一个文件单位进行分块。</p>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><p>1、互联网非结构化数据的存储需求</p>
+<p>​	1.1 、电商网站：海量商品图片</p>
+<p>2.1、视频网站：海量视频文件</p>
+<p>3.1、网盘：海量文件</p>
+<h2 id="MinIO优势"><a href="#MinIO优势" class="headerlink" title="MinIO优势"></a>MinIO优势</h2><p>1、数据保护</p>
+<p>​	1.1、分布式MInio采用纠删码来放反多个节点待机和位衰减 bit rot</p>
+<p>​	1.2、分布式Minio至少需要4个硬盘，使用分布式Minio自动引入了纠删码功能。</p>
+<p>2、高可用</p>
+<p>​	2.1、单机Minio服务存在单点故障，相反，如果是有一个N快硬盘的分布式Minio，只要有N&#x2F;2硬盘在线，你的数据就是安全的。不过你需要至少有N&#x2F;2+1个硬盘来创建新的对象。</p>
+<p>​	2.2、例如，一个16节点的Minio集群，每个节点16块块硬盘，计算8台服务器宕机，这个集群仍然是可读的，不过你需要9台服务器才能写入数据。</p>
+<p>3、一致性</p>
+<p>​	3.1、Minio在分布式和单机模式下，所有读写炒作都严格遵守read-after-write 一致性模型</p>
+<h1 id="MinIO-使用"><a href="#MinIO-使用" class="headerlink" title="MinIO 使用"></a>MinIO 使用</h1><h2 id="使用【服务端】"><a href="#使用【服务端】" class="headerlink" title="使用【服务端】"></a>使用【服务端】</h2><h3 id="单机模式-（linux部署）"><a href="#单机模式-（linux部署）" class="headerlink" title="单机模式 （linux部署）"></a>单机模式 （linux部署）</h3><p>ps：初始用户名密码：minioadmin</p>
+<p>1、下载linux minio， wget <a target="_blank" rel="noopener" href="https://dl.min.io/server/minio/release/linux-amd64/minio">https://dl.min.io/server/minio/release/linux-amd64/minio</a></p>
+<p>2、linux部署</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs shell">修改用户名密码：<br>export MINIO_ROOT_USER=username<br>export MINIO_ROOT_PASSWORD=password<br><br>启动：<br>./minio server --console-address &quot;:9090&quot; /mnt/data<br><br>后台启动，指定日志路径：<br>nohup ./minio server --console-address :&quot;9090&quot; ./miniodata/data &gt;./miniodata/minio.log 2&gt;&amp;1 &amp;<br><br>ps：接口默认地址：9000<br>指定console端口：9090<br></code></pre></td></tr></table></figure>
+
+<p>3、docker部署</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run \<br>  -p 9000:9000 \<br>  -p 9001:9001 \<br>  -e &quot;MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE&quot; \<br>  -e &quot;MINIO_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY&quot; \<br>  quay.io/minio/minio server /data --console-address &quot;:9001&quot;<br></code></pre></td></tr></table></figure>
+
+<p>4、docker部署纠删码模式</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run -d -p 9000:9000 -p 9090:9090 --name minio \<br> -v /mnt/data1:/data1 \<br> -v /mnt/data2:/data2 \<br> -v /mnt/data3:/data3 \<br> -v /mnt/data4:/data4 \<br> -v /mnt/data5:/data5 \<br> -v /mnt/data6:/data6 \<br> -v /mnt/data7:/data7 \<br> -v /mnt/data8:/data8 \<br>minio/minio server /data&#123;1...8&#125; --console-address &quot;:9090&quot;<br></code></pre></td></tr></table></figure>
+
+<p>5、缺点：单点故障，直接宕机</p>
+<h3 id="分布式部署"><a href="#分布式部署" class="headerlink" title="分布式部署"></a>分布式部署</h3><p>注意事项：</p>
+<p>1、linux部署：启动一个分布式Minio实例，你只需要把硬盘位置作为参数传给minio server命令即可，然后，你需要在所有其他节点运行同样的命令。</p>
+<p>2、分布式Minio里所有的节点需要有同样的access秘钥和secret秘钥，这样这些节点才能建立连接。为了实现这个，你需要在执行minioserver命令前，先将access秘钥和secret秘钥expoert成环境变量。新版本使用MINIO_ROOT_USER&amp;MINIO_ROOTPASSWORD。</p>
+<p>3、【举例1】8个节点，每个节点1块盘。启动分布式Minio实例，8个节点，每节点1块盘，需要再8个节点上都运行下面的命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">export MINIO_ROOT_USER=admin<br>export MINIO_ROOT_PASSWORD=123456<br></code></pre></td></tr></table></figure>
+
+<p>【举例1.1】下面示例的IP仅供示例参考没需要改成你真实的IP地址和文件夹路径。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">minio server http://192.168.1.11/export1 \<br>http://192.168.1.12/export2 \<br>http://192.168.1.13/export3 \<br>http://192.168.1.14/export4 \<br>http://192.168.1.15/export5 \<br>http://192.168.1.16/export6 \<br>http://192.168.1.17/export7 \<br>http://192.168.1.18/export8 \<br></code></pre></td></tr></table></figure>
+
+<p>【举例2】4个节点，每个节点2块盘。启动分布式Minio实例，4个节点，每节点2块盘，需要再4个节点上都运行下面的命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">export MINIO_ROOT_USER=admin<br>export MINIO_ROOT_PASSWORD=123456<br></code></pre></td></tr></table></figure>
+
+<p>【举例2.1】下面示例的IP仅供示例参考没需要改成你真实的IP地址和文件夹路径。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">http://192.168.1.11/export1 \<br>http://192.168.1.11/export2 \<br>http://192.168.1.12/export1 \<br>http://192.168.1.12/export2 \<br>http://192.168.1.13/export1 \<br>http://192.168.1.13/export2 \<br>http://192.168.1.14/export1 \<br>http://192.168.1.14/export2 \<br></code></pre></td></tr></table></figure>
+
+<p> 5、统一入口：使用Nginx 统一入口，可以做ip hash策略分散服务器压力。</p>
+<p>【例如 ：】</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">upstream</span> minio &#123;<br>    <span class="hljs-attribute">server</span> <span class="hljs-number">192.168.1.11:9001</span>;<br>    <span class="hljs-attribute">server</span> <span class="hljs-number">192.168.1.12:9001</span>;<br>    <span class="hljs-attribute">server</span> <span class="hljs-number">192.168.1.13:9001</span>;<br>    <span class="hljs-attribute">server</span> <span class="hljs-number">192.168.1.14:9001</span>;<br>&#125;<br><br><span class="hljs-section">upstream</span> console &#123;<br>    ip_hash;<br>    <span class="hljs-attribute">server</span> <span class="hljs-number">192.168.1.11:5001</span>;<br>    <span class="hljs-attribute">server</span> <span class="hljs-number">192.168.1.12:5002</span>;<br>    <span class="hljs-attribute">server</span> <span class="hljs-number">192.168.1.13:5003</span>;<br>    <span class="hljs-attribute">server</span> <span class="hljs-number">192.168.1.14:5004</span>;<br>&#125;<br><br><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span>      <span class="hljs-number">9000</span>;<br>    <span class="hljs-attribute">listen</span> [::] <span class="hljs-number">9000</span>;<br>    <span class="hljs-attribute">server_name</span> localhost;<br>    <br>    <span class="hljs-attribute">localhost</span> / &#123;<br>    <br>        <span class="hljs-attribute">proxy_pass</span> http://minio;<br>    &#125;<br>&#125;<br><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span>      <span class="hljs-number">5000</span>;<br>    <span class="hljs-attribute">listen</span> [::] <span class="hljs-number">5000</span>;<br>    <span class="hljs-attribute">server_name</span> localhost;<br>    <br>    <span class="hljs-attribute">localhost</span> / &#123;<br>    <br>    <span class="hljs-attribute">proxy_pass</span> http://console;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>6、<a target="_blank" rel="noopener" href="https://docs.min.io/docs/deploy-minio-on-docker-compose.html">docker-compose部署</a></p>
+<h2 id="使用【客户端】"><a href="#使用【客户端】" class="headerlink" title="使用【客户端】"></a>使用【客户端】</h2><p>介绍：MinIO Clinet(mc) 为ls,cat，cp，mirror，diff,find 等UNIX命令提供一种替代方案。它支持文件系统和兼容Amazon S3的云存储服务（AWS Signature v2和v4）。</p>
+<h3 id="Windows-部署"><a href="#Windows-部署" class="headerlink" title="Windows 部署"></a>Windows 部署</h3><p>ps:注意9001 是接口端口，不是console端口。</p>
+<p>1、下载 </p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">wget https:<span class="hljs-regexp">//</span>dl.min.io<span class="hljs-regexp">/client/m</span>c<span class="hljs-regexp">/release/</span>linux-amd64/mc <br></code></pre></td></tr></table></figure>
+
+<p>2、赋予权限</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">chmod</span> +x mc<br>./mc --<span class="hljs-built_in">help</span><br></code></pre></td></tr></table></figure>
+
+<p>3、查询mc host配置</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arduino">mc config host ls<br></code></pre></td></tr></table></figure>
+
+<p>　　4、 添加minio服务</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs arduino">mc config host add minio-server http:<span class="hljs-comment">//81.70.144.153:9001/</span><br>minioadmin minioadmin<br></code></pre></td></tr></table></figure>
+
+<p>　　5、 mc命令【管理文件】</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 加入配置文件：</span><br>mc config host add minio01 http://81.70.144.153:9000 minioadmin minioadmin<br><br><span class="hljs-comment"># 连接查看minio文件内容：</span><br>mc <span class="hljs-built_in">ls</span> tuling minio01<br><br><span class="hljs-comment"># 下载文件</span><br>mc <span class="hljs-built_in">cp</span> minio01/yeb/数据结构算法面试题.txt D:\<br><br><span class="hljs-comment"># 上传文件</span><br>mc <span class="hljs-built_in">cp</span> D:\测试.txt minio01/yeb<br><br><span class="hljs-comment"># 删除文件</span><br>mc <span class="hljs-built_in">rm</span> minio01/yeb/测试.txt<br></code></pre></td></tr></table></figure>
+
+<p>6、mc命令【管理桶（Bucket）】</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 创建bucket</span><br>mc mb minio01/yeb1<br><br><span class="hljs-comment"># 删除bucket(有数据删除失败)</span><br>mc rb minio01/yeb1<br><br><span class="hljs-comment"># bucket不为空，强制删除，慎用</span><br>mc rb --force minio01/yeb1<br><br><span class="hljs-comment"># 查看bucket磁盘使用情况</span><br>mc <span class="hljs-built_in">du</span> minio01/yeb<br></code></pre></td></tr></table></figure>
+
+<p>7、mc命令【admin使用】</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs routeros">Minio<span class="hljs-built_in"> Client </span>提供了‘admin’子命令来对minio部署执行管理任务<br><span class="hljs-built_in"></span><br><span class="hljs-built_in">service </span>服务器停止并且重启所有Minio服务器<br>udpate 更新所有MInio服务器<br><span class="hljs-built_in">info</span> 显示minio服务器信息<span class="hljs-built_in"></span><br><span class="hljs-built_in">user </span>管理用户<span class="hljs-built_in"></span><br><span class="hljs-built_in">group </span>管理小组<span class="hljs-built_in"></span><br><span class="hljs-built_in">policy </span>minio服务器中定义策略管理<br>cofnig 配置管理minio服务器<br>heal 修复minio服务器上的磁盘、桶、对象<span class="hljs-built_in"></span><br><span class="hljs-built_in">profile </span>生成概要文件数据进行调试<br>top 顶部提供minio统计信息<br>trace 跟踪显示minio服务器的http跟踪<span class="hljs-built_in"></span><br><span class="hljs-built_in">console </span>控制台显示minio服务器的控制台日志<br>prometheus prometheys配置<br>kms kms管理操作<br></code></pre></td></tr></table></figure>
+
+<h2 id="官方-Java-demo使用"><a href="#官方-Java-demo使用" class="headerlink" title="官方 Java demo使用"></a><a target="_blank" rel="noopener" href="https://github.com/minio/minio-java">官方 Java demo使用</a></h2><h3 id="附：content-type-与后缀名对应"><a href="#附：content-type-与后缀名对应" class="headerlink" title="附：content-type 与后缀名对应"></a>附：content-type 与后缀名对应</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;.*&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/octet-stream&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.001&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-001&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.301&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-301&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.323&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/h323&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.906&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-906&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.907&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;drawing/907&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.a11&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-a11&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.acp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/x-mei-aac&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ai&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/postscript&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.aif&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/aiff&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.aifc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/aiff&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.aiff&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/aiff&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.anv&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-anv&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.asa&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/asa&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.asf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-ms-asf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.asp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/asp&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.asx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-ms-asf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.au&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/basic&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.avi&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/avi&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.awf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.adobe.workflow&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.biz&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.bmp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-bmp&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.bot&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-bot&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.c4t&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-c4t&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.c90&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-c90&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cal&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-cals&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cat&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/s-pki.seccat&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cdf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-netcdf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cdr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-cdr&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cel&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-cel&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-x509-ca-cert&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cg4&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-g4&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cgm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-cgm&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cit&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-cit&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.class&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;java/*&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cml&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cmp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-cmp&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cmx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-cmx&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cot&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-cot&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.crl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/pkix-crl&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.crt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-x509-ca-cert&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.csi&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-csi&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.css&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/css&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.cut&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-cut&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dbf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-dbf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dbm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-dbm&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dbx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-dbx&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dcd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dcx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-dcx&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.der&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-x509-ca-cert&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dgn&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-dgn&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dib&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-dib&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dll&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-msdownload&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.doc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/msword&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dot&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/msword&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.drw&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-drw&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dtd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dwf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Model/vnd.dwf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dwg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-dwg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dxb&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-dxb&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.dxf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-dxf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.edn&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.adobe.edn&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.emf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-emf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.eml&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;message/rfc822&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.epi&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-epi&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.eps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-ps&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.etd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-ebx&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.exe&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-msdownload&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.fax&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/fax&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.fdf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.fdf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.fif&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/fractals&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.fo&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.frm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-frm&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.g4&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-g4&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.gbr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-gbr&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.gcd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-gcd&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.gif&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/gif&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.gl2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-gl2&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.gp4&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-gp4&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.hgl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-hgl&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.hmr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-hmr&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.hpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-hpgl&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.hpl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-hpl&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.hqx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/mac-binhex40&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.hrf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-hrf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.hta&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/hta&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.htc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/x-component&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.htm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/html&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.html&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/html&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.htt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/webviewhtml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.htx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/html&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.icb&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-icb&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ico&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/x-icon&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.iff&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-iff&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ig4&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-g4&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.igs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-igs&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.iii&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-iphone&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.img&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-img&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ins&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-internet-signup&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.isp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-internet-signup&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.IVF&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-ivf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.java&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;java/*&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.jfif&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/jpeg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.jpe&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/jpeg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.jpeg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/jpeg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/jpeg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.js&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-javascript&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.jsp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/html&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.la1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/x-liquid-file&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.lar&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-laplayer-reg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.latex&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-latex&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.lavs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/x-liquid-secure&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.lbm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-lbm&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.lmsff&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/x-la-lms&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ls&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-javascript&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ltr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-ltr&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.m1v&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-mpeg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.m2v&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-mpeg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.m3u&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/mpegurl&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.m4e&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/mpeg4&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mac&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-mac&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.man&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-troff-man&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.math&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mdb&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-mdb&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mfp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-shockwave-flash&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mht&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;message/rfc822&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mhtml&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;message/rfc822&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mi&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-mi&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mid&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/mid&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.midi&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/mid&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mil&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-mil&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mml&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mnd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/x-musicnet-download&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mns&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/x-musicnet-stream&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mocha&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-javascript&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.movie&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-sgi-movie&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mp1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/mp1&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mp2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/mp2&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mp2v&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/mpeg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mp3&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/mp3&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mp4&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/mp4&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpa&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-mpg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/-project&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpe&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-mpeg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpeg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/mpg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/mpg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpga&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/rn-mpeg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/-project&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-mpeg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/-project&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpv&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/mpg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpv2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/mpeg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpw&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/s-project&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mpx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/-project&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mtx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.mxp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-mmxp&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.net&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/pnetvue&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.nrf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-nrf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.nws&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;message/rfc822&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.odc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/x-ms-odc&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.out&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-out&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.p10&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/pkcs10&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.p12&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pkcs12&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.p7b&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pkcs7-certificates&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.p7c&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/pkcs7-mime&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.p7m&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/pkcs7-mime&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.p7r&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pkcs7-certreqresp&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.p7s&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/pkcs7-signature&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pc5&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pc5&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pci&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pci&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pcl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pcl&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pcx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pcx&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pdf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/pdf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pdx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.adobe.pdx&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pfx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pkcs12&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pgl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pgl&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pic&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pic&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pko&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application-pki.pko&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-perl&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.plg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/html&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pls&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/scpls&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.plt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-plt&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.png&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/png&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pot&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;applications-powerpoint&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ppa&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vs-powerpoint&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ppm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-ppm&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application-powerpoint&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ppt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;applications-powerpoint&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pr&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.prf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/pics-rules&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.prn&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-prn&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.prt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-prt&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/postscript&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ptn&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-ptn&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.pwz&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/powerpoint&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.r3t&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/vnd.rn-realtext3d&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ra&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/vnd.rn-realaudio&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ram&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/x-pn-realaudio&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ras&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-ras&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rat&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/rat-file&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rdf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rec&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.rn-recording&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.red&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-red&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rgb&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-rgb&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rjs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.rn-realsystem-rjs&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rjt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.rn-realsystem-rjt&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rlc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-rlc&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rle&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-rle&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.rn-realmedia&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rmf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.adobe.rmf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rmi&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/mid&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rmj&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.rn-realsystem-rmj&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rmm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/x-pn-realaudio&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rmp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.rn-rn_music_package&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rms&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.rn-realmedia-secure&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rmvb&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.rn-realmedia-vbr&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rmx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.rn-realsystem-rmx&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rnx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.rn-realplayer&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/vnd.rn-realpix&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rpm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/x-pn-realaudio-plugin&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rsml&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.rn-rsml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/vnd.rn-realtext&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rtf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-rtf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.rv&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/vnd.rn-realvideo&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.sam&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-sam&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.sat&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-sat&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.sdp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/sdp&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.sdw&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-sdw&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.sit&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-stuffit&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.slb&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-slb&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.sld&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-sld&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.slk&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;drawing/x-slk&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.smi&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/smil&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.smil&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/smil&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.smk&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-smk&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.snd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/basic&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.sol&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/plain&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.sor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/plain&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.spc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-pkcs7-certificates&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.spl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/futuresplash&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.spp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ssm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/streamingmedia&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.sst&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application-pki.certstore&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.stl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/-pki.stl&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.stm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/html&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.sty&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-sty&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.svg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.swf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-shockwave-flash&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.tdf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-tdf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.tg4&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-tg4&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.tga&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-tga&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.tif&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/tiff&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.tiff&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/tiff&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.tld&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.top&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;drawing/x-top&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.torrent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-bittorrent&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.tsd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.txt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/plain&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.uin&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-icq&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.uls&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/iuls&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vcf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/x-vcard&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vda&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-vda&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vdx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.visio&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vml&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-vpeg005&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vsd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-vsd&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vss&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.visio&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vst&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-vst&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vsw&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.visio&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vsx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.visio&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vtx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.visio&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.vxml&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wav&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/wav&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wax&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/x-ms-wax&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wb1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wb1&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wb2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wb2&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wb3&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wb3&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wbmp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/vnd.wap.wbmp&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wiz&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/msword&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wk3&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wk3&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wk4&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wk4&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wkq&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wkq&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wks&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wks&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-ms-wm&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wma&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/x-ms-wma&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wmd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-ms-wmd&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wmf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wmf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wml&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/vnd.wap.wml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wmv&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-ms-wmv&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wmx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-ms-wmx&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wmz&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-ms-wmz&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wp6&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wp6&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wpd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wpd&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wpg&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wpl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/-wpl&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wq1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wq1&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wr1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wr1&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wri&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wri&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wrk&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-wrk&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ws&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-ws&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.ws2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-ws&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wsc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/scriptlet&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wsdl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.wvx&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;video/x-ms-wvx&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xdp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.adobe.xdp&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xdr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xfd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.adobe.xfd&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xfdf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/vnd.adobe.xfdf&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xhtml&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/html&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xls&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-xls&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xlw&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-xlw&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xml&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xpl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audio/scpls&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xq&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xql&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xquery&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xsd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xsl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xslt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text/xml&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.xwd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-xwd&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.x_b&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-x_b&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;.x_t&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;application/x-x_t&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<p>原帖地址：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lwqstyle/p/16587503.html">https://www.cnblogs.com/lwqstyle/p/16587503.html</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/MinIO/" class="category-chain-item">MinIO</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MinIo/">#MinIo</a>
+      
+        <a href="/tags/tips/">#tips</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MinIO 介绍使用</div>
+      <div>http://example.com/2023/05/02/MinIo/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>鸭粥</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月2日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/02/flutter-dependencies/" title="flutter常用插件">
+                        <span class="hidden-mobile">flutter常用插件</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -16,25 +16,26 @@
   <meta name="author" content="鸭粥">
   <meta name="keywords" content="">
   
-    <meta name="description" content="定义缓存穿透（cache penetration）是用户访问的数据既不在缓存当中，也不在数据库中。出于容错的考虑，如果从底层数据库查询不到数据，则不写入缓存。这就导致每次请求都会到底层数据库进行查询，缓存也失去了意义。当高并发或有人利用不存在的Key频繁攻击时，数据库的压力骤增，甚至崩溃，这就是缓存穿透问题。  发生场景缓存穿透发生的场景一般有两类：  原来数据是存在的，但由于某些原因（误删除、主">
+    <meta name="description" content="定义缓存雪崩是指只大量热点key同时失效的情况，如果是单个热点key，在不停的扛着大并发，在这个key失效的瞬间，持续的大并发请求就会击破缓存，直接请求到数据库，好像蛮力击穿一样。这种情况就是缓存击穿（Cache Breakdown）。  从定义上可以看出，缓存击穿和缓存雪崩很类似，只不过是缓存击穿是一个热点key失效，而缓存雪崩是大量热点key失效。因此，可以将缓存击穿看作是缓存雪崩的一个子集。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="redis高可用之缓存穿透">
-<meta property="og:url" content="http://example.com/2023/05/30/redis-cache-penetration/index.html">
+<meta property="og:title" content="redis高可用之缓存击穿">
+<meta property="og:url" content="http://example.com/2023/06/08/redis-cache-breakdown/index.html">
 <meta property="og:site_name" content="鸭粥的Blog">
-<meta property="og:description" content="定义缓存穿透（cache penetration）是用户访问的数据既不在缓存当中，也不在数据库中。出于容错的考虑，如果从底层数据库查询不到数据，则不写入缓存。这就导致每次请求都会到底层数据库进行查询，缓存也失去了意义。当高并发或有人利用不存在的Key频繁攻击时，数据库的压力骤增，甚至崩溃，这就是缓存穿透问题。  发生场景缓存穿透发生的场景一般有两类：  原来数据是存在的，但由于某些原因（误删除、主">
+<meta property="og:description" content="定义缓存雪崩是指只大量热点key同时失效的情况，如果是单个热点key，在不停的扛着大并发，在这个key失效的瞬间，持续的大并发请求就会击破缓存，直接请求到数据库，好像蛮力击穿一样。这种情况就是缓存击穿（Cache Breakdown）。  从定义上可以看出，缓存击穿和缓存雪崩很类似，只不过是缓存击穿是一个热点key失效，而缓存雪崩是大量热点key失效。因此，可以将缓存击穿看作是缓存雪崩的一个子集。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/redis-cache-penetration/redis-cache-penetration.png">
-<meta property="og:image" content="http://example.com/img/redis-cache-penetration/bloomfilter.png">
-<meta property="article:published_time" content="2023-05-30T03:59:36.000Z">
-<meta property="article:modified_time" content="2023-05-30T04:22:21.566Z">
+<meta property="og:image" content="http://example.com/img/redis-cache-breakdown/redis-cache-breakdown.png">
+<meta property="og:image" content="http://example.com/img/redis-cache-breakdown/lock.png">
+<meta property="og:image" content="http://example.com/img/redis-cache-breakdown/logicExpire.png">
+<meta property="article:published_time" content="2023-06-08T01:11:17.000Z">
+<meta property="article:modified_time" content="2023-06-09T03:01:16.844Z">
 <meta property="article:author" content="鸭粥">
 <meta property="article:tag" content="note">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/redis-cache-penetration/redis-cache-penetration.png">
+<meta name="twitter:image" content="http://example.com/img/redis-cache-breakdown/redis-cache-breakdown.png">
   
   
   
-  <title>redis高可用之缓存穿透 - 鸭粥的Blog</title>
+  <title>redis高可用之缓存击穿 - 鸭粥的Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -200,7 +201,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="redis高可用之缓存穿透"></span>
+            <span id="subtitle" data-typed-text="redis高可用之缓存击穿"></span>
           
         </div>
 
@@ -211,8 +212,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-05-30 11:59" pubdate>
-          2023年5月30日 中午
+        <time datetime="2023-06-08 09:11" pubdate>
+          2023年6月8日 上午
         </time>
       </span>
     
@@ -223,7 +224,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.2k 字
+          510 字
         
       </span>
     
@@ -234,7 +235,7 @@
         
         
         
-          11 分钟
+          5 分钟
         
       </span>
     
@@ -272,31 +273,29 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">redis高可用之缓存穿透</h1>
+            <h1 style="display: none">redis高可用之缓存击穿</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>缓存穿透（cache penetration）是用户访问的数据既不在缓存当中，也不在数据库中。出于容错的考虑，如果从底层数据库查询不到数据，则不写入缓存。这就导致每次请求都会到底层数据库进行查询，缓存也失去了意义。当高并发或有人利用不存在的Key频繁攻击时，数据库的压力骤增，甚至崩溃，这就是缓存穿透问题。</p>
-<p><img src="/../img/redis-cache-penetration/redis-cache-penetration.png" srcset="/img/loading.gif" lazyload alt="redis-cache-penetration"></p>
-<h1 id="发生场景"><a href="#发生场景" class="headerlink" title="发生场景"></a>发生场景</h1><p><strong>缓存穿透</strong>发生的场景一般有两类：</p>
-<ul>
-<li>原来数据是存在的，但由于某些原因（误删除、主动清理等）在缓存和数据库层面被删除了，但前端或前置的应用程序依旧保有这些数据；</li>
-<li>恶意攻击行为，利用不存在的Key或者恶意尝试导致产生大量不存在的业务数据请求。</li>
-</ul>
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><h3 id="方案一：缓存空值（null）或默认值"><a href="#方案一：缓存空值（null）或默认值" class="headerlink" title="方案一：缓存空值（null）或默认值"></a><strong>方案一：缓存空值（null）或默认值</strong></h3><p>分析业务请求，如果是正常业务请求时发生缓存穿透现象，可针对相应的业务数据，在数据库查询不存在时，将其缓存为空值（null）或默认值。需要注意的是，针对空值的缓存失效时间不宜过长，一般设置为5分钟之内。当数据库被写入或更新该key的新数据时，缓存必须同时被刷新，避免数据不一致。</p>
-<h3 id="方案二：业务逻辑前置校验"><a href="#方案二：业务逻辑前置校验" class="headerlink" title="方案二：业务逻辑前置校验"></a><strong>方案二：业务逻辑前置校验</strong></h3><p>在业务请求的入口处进行数据合法性校验，检查请求参数是否合理、是否包含非法值、是否恶意请求等，提前有效阻断非法请求。比如，根据年龄查询时，请求的年龄为-10岁，这显然是不合法的请求参数，直接在参数校验时进行判断返回。</p>
-<h3 id="方案三：使用布隆过滤器请求白名单"><a href="#方案三：使用布隆过滤器请求白名单" class="headerlink" title="方案三：使用布隆过滤器请求白名单"></a><strong>方案三：使用布隆过滤器请求白名单</strong></h3><p>在写入数据时，使用布隆过滤器进行标记（相当于设置白名单），业务请求发现缓存中无对应数据时，可先通过查询布隆过滤器判断数据是否在白名单内，如果不在白名单内，则直接返回空或失败。</p>
-<h4 id="布隆过滤器（BloomFilter）"><a href="#布隆过滤器（BloomFilter）" class="headerlink" title="布隆过滤器（BloomFilter）"></a>布隆过滤器（BloomFilter）</h4><h5 id="定义："><a href="#定义：" class="headerlink" title="定义："></a>定义：</h5><p>布隆过滤器是一种概率型数据结构，它的特点是高效的插入和查询，能确定某个字符串一定存在或者可能存在。</p>
-<p><strong>布隆过滤器不存储具体数据，所以占用空间小，查询结果存在误差，但误差可控，同时不支持删除操作。</strong></p>
-<h5 id="构成："><a href="#构成：" class="headerlink" title="构成："></a>构成：</h5><p>布隆过滤器的原理本质上和散列表是一样的。但布隆过滤器为了节约内存，不是使用的数组，而是使用的位图。</p>
-<p>它包括<strong>一个位图</strong> 和 <strong>n个hash函数</strong></p>
-<h5 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h5><p>当一个元素加入位图时，通过k个hash函数将元素映射到位图的k个点，并把它们置1；当检索时，再通过k个hash函数运算检查位图的k个点是否都为1；如果有不为1的点，那么认为该key不存在；如果全部为1，则可能存在。</p>
-<p>布隆过滤器是不支持删除操作的，原因在于：在位图中每个槽位只有两种状态（0或者1），一个槽位被置为1，但不确定它被设置了多少次；也不知道被多少个key hash映射而来；以及具体被哪个hash函数映射而来。</p>
-<p>值得注意的是，只要有一个槽位为0，则key一定不存在；如果key映射的所有槽位都为1，不能说明一定存在，只能说明可能存在（假阳率）。</p>
-<p><img src="/../img/redis-cache-penetration/bloomfilter.png" srcset="/img/loading.gif" lazyload alt="bloomfilter"></p>
-<h3 id="方案四：用户黑名单限制"><a href="#方案四：用户黑名单限制" class="headerlink" title="方案四：用户黑名单限制"></a><strong>方案四：用户黑名单限制</strong></h3><p>当发生异常情况时，实时监控访问的对象和数据，分析用户行为，针对故意请求、爬虫或攻击者，进行特定用户的限制；</p>
-<p>当然，可能针对缓存穿透的情况，也有可能是其他的原因引起，可以针对具体情况，采用对应的措施。</p>
+                <h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>缓存雪崩是指只大量热点key同时失效的情况，如果是单个热点key，在不停的扛着大并发，在这个key失效的瞬间，持续的大并发请求就会击破缓存，直接请求到数据库，好像蛮力击穿一样。这种情况就是<strong>缓存击穿</strong>（Cache Breakdown）。</p>
+<p><img src="/../img/redis-cache-breakdown/redis-cache-breakdown.png" srcset="/img/loading.gif" lazyload alt="缓存击穿"></p>
+<p>从定义上可以看出，缓存击穿和缓存雪崩很类似，只不过是缓存击穿是一个热点key失效，而缓存雪崩是大量热点key失效。因此，可以将缓存击穿看作是缓存雪崩的一个子集。</p>
+<h1 id="发生原因"><a href="#发生原因" class="headerlink" title="发生原因"></a>发生原因</h1><p>缓存中不存在所需的热点数据：当系统中某个热点数据需要被频繁访问时，如果这个<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E7%83%AD%E7%82%B9%E6%95%B0%E6%8D%AE&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22article%22,%22sourceId%22:%22624454303%22%7D">热点数据</a>最开始没有被缓存，那么就会导致系统每次请求都需要直接查询数据库，造成数据库负担。</p>
+<p>缓存的热点数据过期：当一个热点数据过期并需要重新缓存时，如果此时有大量请求，那么就会导致所有请求都要直接查询数据库。</p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><ol>
+<li>使用互斥锁（Mutex Key），只让一个线程构建缓存，其他线程等待构建缓存执行完毕，重新从缓存中获取数据。单机通过synchronized或lock来处理，分布式环境采用分布式锁。</li>
+</ol>
+<p><img src="/../img/redis-cache-breakdown/lock.png" srcset="/img/loading.gif" lazyload alt="互斥锁解决缓存击穿"></p>
+<ol start="2">
+<li>逻辑过期</li>
+</ol>
+<p><img src="/../img/redis-cache-breakdown/logicExpire.png" srcset="/img/loading.gif" lazyload alt="逻辑过期"></p>
+<ol start="3">
+<li><p>给hot key设置合适的过期时间</p>
+<p>在对缓存一致性要求不高时，不给热点key设置过期时间，或设置合适的过期时间，同时启动一个定时任务去更新此key。</p>
+</li>
+</ol>
 
                 
               </div>
@@ -342,8 +341,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>redis高可用之缓存穿透</div>
-      <!-- <div>http://example.com/2023/05/30/redis-cache-penetration/</div> -->
+      <div>redis高可用之缓存击穿</div>
+      <!-- <div>http://example.com/2023/06/08/redis-cache-breakdown/</div> -->
     </div>
     <div class="license-meta">
       
@@ -355,7 +354,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年5月30日</div>
+          <div>2023年6月8日</div>
         </div>
       
       
@@ -387,18 +386,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/06/08/redis-cache-breakdown/" title="redis高可用之缓存击穿">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">redis高可用之缓存击穿</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/05/13/redis-aof/" title="redis持久化之AOF">
-                        <span class="hidden-mobile">redis持久化之AOF</span>
+                      <a href="/2023/05/30/redis-cache-penetration/" title="redis高可用之缓存穿透">
+                        <span class="hidden-mobile">redis高可用之缓存穿透</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>redis高可用之缓存雪崩</title>
+    <link href="/2023/06/09/redis-cache-avalanche/"/>
+    <url>/2023/06/09/redis-cache-avalanche/</url>
+    
+    <content type="html"><![CDATA[<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>大量缓存数据在同一时间过期（失效）时，如果此时有大量的用户请求，都无法在 Redis 中处理，于是全部请求都直接访问数据库，从而导致数据库的压力骤增，严重的会造成数据库宕机，从而形成一系列连锁反应，造成整个系统崩溃，这就是<strong>缓存雪崩</strong></p><p><img src="/../img/redis-cache-avalanche/redis-cache-avalanche.png" alt="缓存雪崩"></p><h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p> 1.给不同的Key的TTL添加随机值</p><p> 2.利用Redis集群提高服务的可用性</p><p> 3.给缓存业务添加降级限流策略</p><p> 4.给业务添加多级缓存</p><p>5.设置缓存不过期</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>redis</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>note</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>redis高可用之缓存击穿</title>
     <link href="/2023/06/08/redis-cache-breakdown/"/>
     <url>/2023/06/08/redis-cache-breakdown/</url>

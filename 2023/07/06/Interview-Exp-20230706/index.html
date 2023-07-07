@@ -1,0 +1,1012 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.JPG">
+  <link rel="icon" href="/img/avatar.JPG">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="鸭粥">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="小米JAVA软开来源：牛客 众所周周知 https:&#x2F;&#x2F;www.nowcoder.com&#x2F;discuss&#x2F;494189564689387520?sourceSSR&#x3D;users 一面1.Redis 如何清除过期数据？Redis的缓存清除策略：1.惰性删除可以通过在需要使用缓存时检查它是否过期，并在过期时清除它。这种策略可以节省内存空间，但需要在访问缓存时进行额外的检查和处理。这种策略适用于缓存数据量">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面经2023-07-06">
+<meta property="og:url" content="http://example.com/2023/07/06/Interview-Exp-20230706/index.html">
+<meta property="og:site_name" content="鸭粥的Blog">
+<meta property="og:description" content="小米JAVA软开来源：牛客 众所周周知 https:&#x2F;&#x2F;www.nowcoder.com&#x2F;discuss&#x2F;494189564689387520?sourceSSR&#x3D;users 一面1.Redis 如何清除过期数据？Redis的缓存清除策略：1.惰性删除可以通过在需要使用缓存时检查它是否过期，并在过期时清除它。这种策略可以节省内存空间，但需要在访问缓存时进行额外的检查和处理。这种策略适用于缓存数据量">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-06T03:33:00.000Z">
+<meta property="article:modified_time" content="2023-07-07T01:46:58.199Z">
+<meta property="article:author" content="鸭粥">
+<meta property="article:tag" content="面经">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>面经2023-07-06 - 鸭粥的Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鸭粥的Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/avatar.JPG') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="面经2023-07-06"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-06 11:33" pubdate>
+          2023年7月6日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          16k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          132 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">面经2023-07-06</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="小米JAVA软开"><a href="#小米JAVA软开" class="headerlink" title="小米JAVA软开"></a>小米JAVA软开</h1><p>来源：牛客 众所周周知</p>
+<p><a target="_blank" rel="noopener" href="https://www.nowcoder.com/discuss/494189564689387520?sourceSSR=users">https://www.nowcoder.com/discuss/494189564689387520?sourceSSR=users</a></p>
+<h1 id="一面"><a href="#一面" class="headerlink" title="一面"></a>一面</h1><h2 id="1-Redis-如何清除过期数据？"><a href="#1-Redis-如何清除过期数据？" class="headerlink" title="1.Redis 如何清除过期数据？"></a>1.Redis 如何清除过期数据？</h2><h4 id="Redis的缓存清除策略："><a href="#Redis的缓存清除策略：" class="headerlink" title="Redis的缓存清除策略："></a>Redis的缓存清除策略：</h4><h5 id="1-惰性删除"><a href="#1-惰性删除" class="headerlink" title="1.惰性删除"></a>1.惰性删除</h5><p>可以通过在需要使用缓存时检查它是否过期，并在过期时清除它。这种策略可以节省内存空间，但需要在访问缓存时进行额外的检查和处理。这种策略适用于缓存数据量较大，但不需要维护过期时间的场景。</p>
+<h5 id="2-定时过期策略"><a href="#2-定时过期策略" class="headerlink" title="2.定时过期策略"></a>2.定时过期策略</h5><p>可以通过设置键的过期时间来自动清除过期的缓存。当键过期时，Redis会自动删除它，以释放内存空间。这种策略适合于需要具有一定时效性的缓存数据。</p>
+<h5 id="3-LRU（Least-Recently-Used）策略"><a href="#3-LRU（Least-Recently-Used）策略" class="headerlink" title="3.LRU（Least Recently Used）策略"></a>3.LRU（Least Recently Used）策略</h5><p>可以通过记录每个键的访问时间，并在需要清除缓存时删除最近最少使用的缓存。这种策略可以最大程度地利用内存空间，但需要维护额外的数据结构来记录缓存的访问时间。这种策略适用于需要缓存大量数据，并且需要保持最常用数据的缓存的场景。</p>
+<h5 id="4-LFU（Least-Frequently-Used）策略"><a href="#4-LFU（Least-Frequently-Used）策略" class="headerlink" title="4.LFU（Least Frequently Used）策略"></a>4.LFU（Least Frequently Used）策略</h5><p>可以通过记录每个键的访问次数，以及在需要清除缓存时删除最少使用的缓存。这种策略可以在缓存访问次数相对均匀的情况下，最大程度地利用内存空间，但需要维护额外的数据结构来记录缓存的访问次数。这种策略适用于需要缓存大量数据，并且需要保持最常用数据的缓存的场景。</p>
+<h2 id="2-Redis-的持久化机制。"><a href="#2-Redis-的持久化机制。" class="headerlink" title="2.Redis 的持久化机制。"></a>2.Redis 的持久化机制。</h2><p>RDB：<a target="_blank" rel="noopener" href="https://bigducksoup.github.io/2023/05/10/redis-rdb/">https://bigducksoup.github.io/2023/05/10/redis-rdb/</a></p>
+<p>AOF：<a target="_blank" rel="noopener" href="https://bigducksoup.github.io/2023/05/13/redis-aof/">https://bigducksoup.github.io/2023/05/13/redis-aof/</a></p>
+<h2 id="3-RDB-和-AOF-方式有什么区别？为什么提供第三种混合方式？"><a href="#3-RDB-和-AOF-方式有什么区别？为什么提供第三种混合方式？" class="headerlink" title="3.RDB 和 AOF 方式有什么区别？为什么提供第三种混合方式？"></a>3.RDB 和 AOF 方式有什么区别？为什么提供第三种混合方式？</h2><p><strong>它们之间的区别如下</strong></p>
+<ol>
+<li>RDB：RDB是一种快照式持久化方式，它会定期将Redis的内存数据快照写入磁盘，以备份数据。RDB的优点是备份数据方便、恢复速度快，适合用于数据量较大、备份频率较低的场景。</li>
+<li>AOF：AOF是一种日志式持久化方式，它会将Redis的写操作以追加的方式记录到一个文件中，以保证数据的持久性。AOF的优点是数据可靠性高、可恢复性好，适合用于需要保证数据完整性和可靠性的场景。</li>
+</ol>
+<p><strong>混合持久化</strong></p>
+<p>重启Redis时，我们很少使用RDB来恢复内存状态，因为会丢失大量数据。我们通常使用AOF日志重放，但是重放AOF日志性能相对于RDB来说慢很多，在Redis实例大的情况下，启动需要花费很长时间，Redis4.0之后提供了新的持久化机制，混合持久化<br>修改配置开启混合持久化（需开启aof）</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs actionscript">aof‐<span class="hljs-keyword">use</span>‐rdb‐preamble yes<br></code></pre></td></tr></table></figure>
+
+
+<p>如果开启了混合持久化，AOF在重写时，不再单纯的将内存数据转换为resp命令写入AOF文件，而是将重写这一刻之前的内存做了RDB快照处理，并且将RDB快照内容和增量AOF修改内存数据的命令存在一起，都写入新的AOF文件，新的文件一开始不叫appendonly.aof，等到重写完新的AOF文件才会进行改名，覆盖原有的AOF文件，完成新旧两个AOF文件的替换。在Redis重启时，可以先加载RDB内容，然后再重放增量AOF日志就可以完全替代之前的AOF全量文件重放，重启效率大幅度提升</p>
+<h2 id="4-Redis-缓存异常的三个问题以及如何解决？"><a href="#4-Redis-缓存异常的三个问题以及如何解决？" class="headerlink" title="4.Redis 缓存异常的三个问题以及如何解决？"></a>4.Redis 缓存异常的三个问题以及如何解决？</h2><p>缓存穿透：<a target="_blank" rel="noopener" href="https://bigducksoup.github.io/2023/05/30/redis-cache-penetration/">https://bigducksoup.github.io/2023/05/30/redis-cache-penetration/</a></p>
+<p>缓存击穿：<a target="_blank" rel="noopener" href="https://bigducksoup.github.io/2023/06/08/redis-cache-breakdown/">https://bigducksoup.github.io/2023/06/08/redis-cache-breakdown/</a></p>
+<p>缓存雪崩：<a target="_blank" rel="noopener" href="https://bigducksoup.github.io/2023/06/09/redis-cache-avalanche/">https://bigducksoup.github.io/2023/06/09/redis-cache-avalanche/</a></p>
+<h2 id="5-布隆过滤器存在什么问题？"><a href="#5-布隆过滤器存在什么问题？" class="headerlink" title="5.布隆过滤器存在什么问题？"></a>5.布隆过滤器存在什么问题？</h2><ol>
+<li>误判率：布隆过滤器是一种概率性数据结构，因此存在一定的误判率。这是因为在哈希冲突的情况下，多个元素可能被映射到同一个位上，从而导致误判。</li>
+<li>不支持删除操作：由于布隆过滤器是基于哈希表实现的，删除一个元素可能会影响其他元素的判断结果。因此，布隆过滤器通常不支持删除操作。</li>
+</ol>
+<h2 id="6-Java-内存模型。"><a href="#6-Java-内存模型。" class="headerlink" title="6.Java 内存模型。"></a>6.Java 内存模型。</h2><p><a target="_blank" rel="noopener" href="https://bigducksoup.github.io/2023/07/06/JMM/">https://bigducksoup.github.io/2023/07/06/JMM/</a></p>
+<h2 id="7-介绍下原子性、可见性和有序性，以及如何实现？"><a href="#7-介绍下原子性、可见性和有序性，以及如何实现？" class="headerlink" title="7.介绍下原子性、可见性和有序性，以及如何实现？"></a>7.介绍下原子性、可见性和有序性，以及如何实现？</h2><p>原子性（Atomicity）、可见性（Visibility）和有序性（Ordering）是多线程编程中的三个重要概念。</p>
+<p><strong>原子性</strong>指的是一个操作是不可分割的，要么全部执行成功，要么全部不执行。在并发编程中，原子性可以保证多个线程对共享变量的操作不会相互干扰，从而避免了数据不一致的问题。常见的实现方式包括使用锁、CAS（Compare and Swap）操作等。</p>
+<p><strong>可见性</strong>指的是一个线程对共享变量的修改能够被其他线程立即看到。在多线程编程中，由于存在线程间的竞争，一个线程对共享变量的修改可能不会立即写入主存，而是先写入缓存。如果其他线程读取的是缓存中的数据，就会导致数据不一致的问题。为了解决这个问题，可以使用volatile关键字或者synchronized关键字来实现可见性。</p>
+<p><strong>有序性</strong>指的是程序执行的顺序与代码的顺序一致。在多线程编程中，由于存在指令重排的优化，程序的执行顺序可能与代码的顺序不一致，从而导致程序的行为出现问题。为了避免这个问题，可以使用volatile关键字或者synchronized关键字来实现有序性。</p>
+<p>在实际编程中，为了保证原子性、可见性和有序性，可以采用以下几种方式：</p>
+<ol>
+<li>使用synchronized关键字或者Lock接口来实现原子性、可见性和有序性。</li>
+<li>使用volatile关键字来实现可见性和有序性。</li>
+<li>使用Atomic类来实现原子性。</li>
+<li>使用Concurrent包中的并发容器来实现原子性和可见性。</li>
+</ol>
+<h2 id="7-volatile-关键字如何实现的？"><a href="#7-volatile-关键字如何实现的？" class="headerlink" title="7.volatile 关键字如何实现的？"></a>7.volatile 关键字如何实现的？</h2><p><strong>可见性</strong></p>
+<p>每个线程都有自己的工作内存（寄存器、高速缓存组成），线程之间是通过主内存进行通信。即线程A把从主内存读取，然后进行运算，将运算后的结果从自己的工作内存写回到主内存，当线程A写回完成之后，其他线程再去主内存读取，就可以得到线程A处理的结果，完成通信。但是，线程A不会经常回写主内存，不然的话处理速度就慢死了，不回写其他的线程就看不到处理之后的数据，只能得到之前的数据。线程看到的数据不一致，就造成可见性问题。</p>
+<p>计算机的处理器运行速度要比内存的读取速度快好几个数量级。但是整个运算流程必须是先从内存中读取某个数据，然后交给处理器，随后将结果再写回到内存中。如果这样的话整个运行的速度就会被卡在内存上，内存读取有多快整体运算有多快，就算处理器再好也没用。巧妇难为无米之炊，从内存读取的数据就是处理器需要的米。遇到海量高并发的时候有个统一思想，异步缓存批量处理。这里采用的就是批量处理，直接从内存中读取一批数据，然后统一交给处理器处理，等处理完成之后统一写回到内存中。</p>
+<p><strong>所以普通的数据是不会立即写回到主内存中的，而是先保存在工作内存中。但是如果用volatile修饰，会让工作内存立即写回到主内存或者从主内存中重新读取，保证数据的可见性。</strong></p>
+<p><strong>Lock前缀</strong></p>
+<p>有 volatile 变量修饰的共享变量进行写操作的时候会多出一行汇编代码，且是Lock指令开头。Lock 前缀的指令在多核处理器下会引发了两件事情：<br>1.将当前处理器缓存行的数据写回到系统内存。<br>2.这个写回内存的操作会使在其他 CPU 里缓存了该内存地址的数据无效。</p>
+<p>Lock前缀指令导致在指令执行期间，声言处理器的LOCK#信号，LOCK#信号会保证在声言此信号期间，处理器可以独占任何共享内存。一部分处理器是通过锁住总线，总线控制读写，锁住总线意味着其他的处理器没有办法访问共享内存，此时只有当前的处理器可以访问内存，实现了独占共享内粗功能。但是锁住总线的代价是很大的，所以另一部分处理器采取的是锁住缓存，如果要写入的内存区域已经缓存在处理器内部，则不会声言LOCK#信号，而是锁定内存区域的缓存并将他写回到内存中，并使用缓存一致性机制来确保修改的原子性，此操作被称为“缓存锁定”，缓存一致性机制会阻止同时修改由两个以上处理器缓存的内存区域数据。</p>
+<p>当一个处理器缓存写回到内存时，其他处理器的中此缓存数据将无效。每个处理器通过嗅探在总线上传播的数据来检查自己缓存的值是否过期，当处理器发现自己缓存行对应的总线地址被修改，就会将当前处理器的缓存设置为无效，当处理器需要此数据时，会重新从共享内存中读取。</p>
+<p><strong>缓存一致性机制</strong></p>
+<p>总线加锁是对整个共享内存，此时其他的处理器无法从共享内存读取数据，会严重降低CPU的处理能力。缓存一致性协议只会对单个缓存行的数据进行加锁，不会影响到内存中其数据的读写。缓存一致性协议有：MSI、MESI、MOSI等。MESI协议只对汇编指令中执行加锁操作的变量有效，表现到java中为使用voliate关键字定义变量或使用加锁操作。</p>
+<p>MESI协议有四种状态：修改、独占、共享、无效</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>描述</th>
+<th>监听任务</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>M修改（modified）</td>
+<td>该Cache line有效，数据被修改了，和内存中的数据不一致，数据只存在于本Cache中。</td>
+<td>缓存行必须时刻监听所有试图读该缓存行相对就主存的操作，这种操作必须在<br/>缓存将该缓存行写回主存并将状态变成S(共享)状态之前被延迟执行。</td>
+</tr>
+<tr>
+<td>E独享、互斥(exclusive)</td>
+<td>该Cache line有效，数据和内存中的数据一致，数据只存在于本Cache中。</td>
+<td>缓存行也必须监听其它缓存读主存中该缓存行的操作，一旦有这种操作，该缓存行需要变成S(共享)状态。</td>
+</tr>
+<tr>
+<td>S共享(shared)</td>
+<td>该Cache line有效，数据和内存中的数据一致，数据存在于很多Cache中。</td>
+<td>缓存行也必须监听其它缓存使该缓存行无效或者独享该缓存行的请求，并将该缓存行变成无效(Invalid)</td>
+</tr>
+<tr>
+<td>I无效(Invalid)</td>
+<td>该Cache line无效</td>
+<td>无</td>
+</tr>
+</tbody></table>
+<p>大致流程如下：<br>1.线程A读取数据Q，将数据Q的状态设置为E（独享、互斥），同时通过总线嗅探机制对共享内存中的数据Q进行嗅探</p>
+<p>2.线程B再次读取数据Q， 总线嗅探将线程A中的Q设置为S（共享），线程B的Q状态也是S共享</p>
+<p>3.线程A修改数据Q， 线程A中的状态变为M（修改），而线程B将会被通知修改为I（无效）。无效的数据将不会被操作，需要从共享内存中重新读取。如果有多个线程同时修改Q，那么总线会进行裁决，某一个变为M，其他的都变为I。</p>
+<p>4.线程A将Q回写内存，此时状态变为E（独占），因为只有他时新数据，其他线程都无效，相当都独享。</p>
+<p>5.线程B通过总线嗅探机制得知Q已经回写到内存，重新读取Q，状态为S，同时线程A中的状态也变成S。</p>
+<h2 id="8-Java-实现同步机制的有哪些方法？加锁方式有哪些？"><a href="#8-Java-实现同步机制的有哪些方法？加锁方式有哪些？" class="headerlink" title="8.Java 实现同步机制的有哪些方法？加锁方式有哪些？"></a>8.Java 实现同步机制的有哪些方法？加锁方式有哪些？</h2><p><strong>Java实现同步机制的方式有以下几种</strong></p>
+<ol>
+<li>synchronized关键字：synchronized是Java中最基本的同步机制，通过在方法或代码块上加锁来实现线程同步。</li>
+<li>Lock接口：Java5引入了Lock接口，提供了比synchronized更加灵活和强大的锁机制。Lock接口有多个实现类，例如ReentrantLock、ReentrantReadWriteLock等。</li>
+<li>volatile关键字：volatile关键字可以保证变量的可见性和有序性，但无法保证原子性，适用于非常简单的同步场景。</li>
+<li>Atomic类：Java中提供了多个原子类，例如AtomicInteger、AtomicLong等，可以保证对变量的操作具有原子性和可见性。</li>
+<li>信号量（Semaphore）：Semaphore是一种计数器，用于控制同时访问某个资源的线程数量。</li>
+<li>读写锁（ReentrantReadWriteLock）：读写锁允许多个线程同时读取共享资源，但只允许一个线程写入共享资源。</li>
+</ol>
+<p>加锁方式有以下几种</p>
+<ol>
+<li>对象锁：使用synchronized关键字或者Lock接口实现的锁机制，可以锁定对象或者代码块，保证同一时间只有一个线程访问。</li>
+<li>类锁：使用synchronized关键字实现的类锁可以锁定整个类，保证同一时间只有一个线程访问。</li>
+<li>读写锁：使用ReentrantReadWriteLock实现的锁机制，可以在读多写少的场景下提高效率。</li>
+<li>原子性操作：使用Atomic类提供的原子性操作可以保证对变量的操作具有原子性和可见性。</li>
+</ol>
+<h2 id="9-synchronized-关键字修饰方法和修饰代码块有什么区别？"><a href="#9-synchronized-关键字修饰方法和修饰代码块有什么区别？" class="headerlink" title="9.synchronized 关键字修饰方法和修饰代码块有什么区别？"></a>9.synchronized 关键字修饰方法和修饰代码块有什么区别？</h2><p><strong>同步方法</strong><br>在Java中，我们可以使用Synchronized关键字修饰方法来实现线程同步。当一个线程进入被Synchronized关键字修饰的方法时，该线程会自动获取该方法所在对象的锁。其他线程如果想要访问该方法，只能等待该线程执行完毕并释放锁之后才能获取锁进入该方法。下面是一个使用Synchronized修饰方法的示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SynchronizedTest</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">count</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">increment</span><span class="hljs-params">()</span> &#123;<br>        count++;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getCount</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> count;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在上面的代码中，我们使用Synchronized关键字修饰了increment()和getCount()两个方法。当一个线程进入increment()方法时，它会自动获取SynchronizedTest对象的锁并执行count++操作，其他线程如果想要访问increment()方法，必须等待该线程执行完毕并释放锁之后才能获取锁进入该方法。同理，当一个线程进入getCount()方法时，它也会自动获取SynchronizedTest对象的锁并返回count值，其他线程必须等待该线程执行完毕并释放锁之后才能获取锁进入该方法。</p>
+<p><strong>同步块</strong><br>除了使用Synchronized修饰方法之外，我们还可以使用同步块来实现线程同步。同步块是指在代码块中使用Synchronized关键字来实现线程同步。在同步块中，我们需要指定一个锁对象，该锁对象可以是任意对象。当一个线程进入同步块时，它会自动获取该锁对象的锁，其他线程如果想要访问同步块中的代码，必须等待该线程执行完毕并释放锁之后才能获取锁进入该代码块。下面是一个使用同步块的示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SynchronizedTest</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">count</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">Object</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>();<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">increment</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">synchronized</span>(lock) &#123;<br>            count++;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getCount</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">synchronized</span>(lock) &#123;<br>            <span class="hljs-keyword">return</span> count;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在上面的代码中，我们使用了一个Object类型的lock对象来作为锁对象，并在increment()和getCount()方法中使用同步块来实现线程同步。当一个线程进入increment()方法时，它会自动获取lock对象的锁并执行count++操作，其他线程如果想要访问increment()方法，必须等待该线程执行完毕并释放lock对象的锁之后才能获取锁进入该方法。同理，当一个线程进入getCount()方法时，它也会自动获取lock对象的锁并返回count值，其他线程必须等待该线程执行完毕并释放lock对象的锁之后才能获取锁进入该方法。</p>
+<p><strong>二者区别</strong><br>在使用Synchronized机制时，我们可以选择Synchronized修饰方法或者使用同步块来实现线程同步。虽然它们都可以实现线程同步，但是它们之间存在一些区别。</p>
+<p><strong>锁的粒度不同</strong><br>Synchronized修饰方法是以对象为锁的粒度进行同步的，而同步块是以代码块为锁的粒度进行同步的。在使用Synchronized修饰方法时，如果该方法中包含了多个代码块，那么这些代码块都会被该方法所在对象的锁所保护。这种方式在多线程并发访问时，可能会导致锁的竞争，从而影响程序的性能。而使用同步块时，我们可以控制锁的粒度，只将需要同步的代码块进行同步，避免了不必要的锁竞争，提高了程序的性能。</p>
+<p><strong>锁的获取时间不同</strong><br>Synchronized修饰方法是在进入方法时自动获取锁的，而同步块需要手动获取锁。在使用Synchronized修饰方法时，如果该方法执行时间较长，其他线程需要等待该方法执行完毕并释放锁之后才能获取锁进入该方法。而使用同步块时，我们可以手动获取和释放锁，在代码块执行完毕之后立即释放锁，避免了其他线程等待的时间，提高了程序的运行效率。</p>
+<p><strong>锁的释放时间不同</strong><br>Synchronized修饰方法是在方法执行完毕之后自动释放锁的，而同步块需要手动释放锁。在使用Synchronized修饰方法时，如果该方法中包含了多个代码块，那么其他线程必须等待该方法执行完毕并释放锁之后才能获取锁进入其他代码块。而使用同步块时，我们可以手动控制锁的释放时间，在代码块执行完毕之后立即释放锁，避免了不必要的锁竞争，提高了程序的运行效率。</p>
+<p>综上所述，Synchronized修饰方法与代码块之间存在一些区别。在实际应用中，我们应该根据具体场景和需求来灵活选择和使用，以保证程序的性能和安全性。</p>
+<h2 id="10-线程池如何创建和管理？"><a href="#10-线程池如何创建和管理？" class="headerlink" title="10.线程池如何创建和管理？"></a>10.线程池如何创建和管理？</h2><blockquote>
+<p>阿里巴巴《Java开发手册》</p>
+<p>【强制要求】线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式，这样的处理方式让写的同学更加明确线程池的运行规则，规避资源耗尽的风险。<br>说明：Executors 返回的线程池对象的弊端如下：<br>1） FixedThreadPool 和 SingleThreadPool：允许的请求队列长度为 Integer.MAX_VALUE，可能会堆积大量的请求，从而导致 OOM。<br>2）CachedThreadPool：允许的创建线程数量为 Integer.MAX_VALUE，可能会创建大量的线程，从而导致 OOM。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">ThreadPoolExecutor</span><span class="hljs-params">(<span class="hljs-type">int</span> corePoolSize,</span><br><span class="hljs-params">                          <span class="hljs-type">int</span> maximumPoolSize,</span><br><span class="hljs-params">                          <span class="hljs-type">long</span> keepAliveTime,</span><br><span class="hljs-params">                          TimeUnit unit,</span><br><span class="hljs-params">                          BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="hljs-params">                          ThreadFactory threadFactory,</span><br><span class="hljs-params">                          RejectedExecutionHandler handler)</span> &#123;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>参数 1：corePoolSize<br>核心线程数，线程池中始终存活的线程数。</p>
+<p>参数 2：maximumPoolSize<br>最大线程数，线程池中允许的最大线程数，当线程池的任务队列满了之后可以创建的最大线程数。</p>
+<p>参数 3：keepAliveTime<br>最大线程数可以存活的时间，当线程中没有任务执行时，最大线程就会销毁一部分，最终保持核心线程数量的线程。</p>
+<p>参数 4：unit:<br>单位是和参数 3 存活时间配合使用的，合在一起用于设定线程的存活时间 。</p>
+<p>参数 5：workQueue<br>一个阻塞队列，用来存储线程池等待执行的任务，均为线程安全，它包含以下 7 种类型：较常用的是 LinkedBlockingQueue 和 Synchronous，线程池的排队策略与 BlockingQueue 有关。</p>
+<p>ArrayBlockingQueue：一个由数组结构组成的有界阻塞队列。<br>LinkedBlockingQueue：一个由链表结构组成的有界阻塞队列。<br>SynchronousQueue：一个不存储元素的阻塞队列，即直接提交给线程不保持它们。<br>PriorityBlockingQueue：一个支持优先级排序的无界阻塞队列。<br>DelayQueue：一个使用优先级队列实现的无界阻塞队列，只有在延迟期满时才能从中提取元素。<br>LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。与SynchronousQueue类似，还含有非阻塞方法。<br>LinkedBlockingDeque：一个由链表结构组成的双向阻塞队列。</p>
+<p>参数 6：threadFactory<br>线程工厂，主要用来创建线程，默认为正常优先级、非守护线程。</p>
+<p>参数 7：handler<br>拒绝策略，拒绝处理任务时的策略，系统提供了 4 种可选：默认策略为 AbortPolicy。</p>
+<p>AbortPolicy：拒绝并抛出异常。<br>CallerRunsPolicy：使用当前调用的线程来执行此任务。<br>DiscardOldestPolicy：抛弃队列头部（最旧）的一个任务，并执行当前任务。<br>DiscardPolicy：忽略并抛弃当前任务。</p>
+<p><strong>ThreadPoolExecutor 关键节点的执行流程如下：</strong></p>
+<p>当线程数小于核心线程数时，创建线程。<br>当线程数大于等于核心线程数，且任务队列未满时，将任务放入任务队列。<br>当线程数大于等于核心线程数，且任务队列已满：若线程数小于最大线程数，创建线程；若线程数等于最大线程数，抛出异常，拒绝任务。</p>
+<h2 id="11-当用户量特别大的时候，如何设计用户表？"><a href="#11-当用户量特别大的时候，如何设计用户表？" class="headerlink" title="11.当用户量特别大的时候，如何设计用户表？"></a>11.当用户量特别大的时候，如何设计用户表？</h2><p>当用户量非常大时，需要考虑用户表的性能和扩展性，例如使用索引、分库分表、缓存等技术来提高系统的性能和可扩展性。同时，需要对用户表进行定期维护和优化，例如清理无用数据、压缩表空间、优化查询语句等。</p>
+<h2 id="12-索引有哪些？"><a href="#12-索引有哪些？" class="headerlink" title="12.索引有哪些？"></a>12.索引有哪些？</h2><p>按照数据结构维度划分：</p>
+<ul>
+<li>BTree 索引：MySQL 里默认和最常用的索引类型。只有叶子节点存储 value，非叶子节点只有指针和 key。存储引擎 MyISAM 和 InnoDB 实现 BTree 索引都是使用 B+Tree，但二者实现方式不一样（前面已经介绍了）。</li>
+<li>哈希索引：类似键值对的形式，一次即可定位。</li>
+<li>RTree 索引：一般不会使用，仅支持 geometry 数据类型，优势在于范围查找，效率较低，通常使用搜索引擎如 ElasticSearch 代替。</li>
+<li>全文索引：对文本的内容进行分词，进行搜索。目前只有 <code>CHAR</code>、<code>VARCHAR</code> ，<code>TEXT</code> 列上可以创建全文索引。一般不会使用，效率较低，通常使用搜索引擎如 ElasticSearch 代替。</li>
+</ul>
+<p>按照底层存储方式角度划分：</p>
+<ul>
+<li>聚簇索引（聚集索引）：索引结构和数据一起存放的索引，InnoDB 中的主键索引就属于聚簇索引。</li>
+<li>非聚簇索引（非聚集索引）：索引结构和数据分开存放的索引，二级索引(辅助索引)就属于非聚簇索引。MySQL 的 MyISAM 引擎，不管主键还是非主键，使用的都是非聚簇索引。</li>
+</ul>
+<p>按照应用维度划分：</p>
+<ul>
+<li>主键索引：加速查询 + 列值唯一（不可以有 NULL）+ 表中只有一个。</li>
+<li>普通索引：仅加速查询。</li>
+<li>唯一索引：加速查询 + 列值唯一（可以有 NULL）。</li>
+<li>覆盖索引：一个索引包含（或者说覆盖）所有需要查询的字段的值。</li>
+<li>联合索引：多列值组成一个索引，专门用于组合搜索，其效率大于索引合并。</li>
+<li>全文索引：对文本的内容进行分词，进行搜索。目前只有 <code>CHAR</code>、<code>VARCHAR</code> ，<code>TEXT</code> 列上可以创建全文索引。一般不会使用，效率较低，通常使用搜索引擎如 ElasticSearch 代替。</li>
+</ul>
+<p>MySQL 8.x 中实现的索引新特性：</p>
+<ul>
+<li>隐藏索引：也称为不可见索引，不会被优化器使用，但是仍然需要维护，通常会软删除和灰度发布的场景中使用。主键不能设置为隐藏（包括显式设置或隐式设置）。</li>
+<li>降序索引：之前的版本就支持通过 desc 来指定索引为降序，但实际上创建的仍然是常规的升序索引。直到 MySQL 8.x 版本才开始真正支持降序索引。另外，在 MySQL 8.x 版本中，不再对 GROUP BY 语句进行隐式排序。</li>
+<li>函数索引：从 MySQL 8.0.13 版本开始支持在索引中使用函数或者表达式的值，也就是在索引中可以包含函数或者表达式。</li>
+</ul>
+<h2 id="13-索引失效有哪些情况？"><a href="#13-索引失效有哪些情况？" class="headerlink" title="13.索引失效有哪些情况？"></a>13.索引失效有哪些情况？</h2><ol>
+<li><p>MySQL 可以为多个字段创建索引，一个索引可以包括 16 个字段。对于多列索引，过滤条件要使用索引，必须按照索引建立的顺序，依次满足，一旦跳过某个字段，索引后面的字段都无法被使用。如果查询条件中没有使用这些字段中第 1 个字段时，多列（或联合）索引不会被使用。</p>
+</li>
+<li><p>计算、函数、类型转换（自动或手动）导致索引失效</p>
+</li>
+<li><p>范围条件右边的列索引失效</p>
+<blockquote>
+<p>应用开发中范围查询，例如：金额查询，日期查询往往都是范围查询。应将查询条件放置 WHERE 语句最后。（创建的联合索引中，务必把范围涉及到的字段写在最后）</p>
+</blockquote>
+</li>
+<li><p>不等于（ !&#x3D; 或者 &lt;&gt; ）索引失效</p>
+</li>
+<li><p>is null 可以使用索引，is not null 无法使用索引</p>
+</li>
+</ol>
+<blockquote>
+<p>最好在设计数据表的时候就将字段设置为 NOT NULL 约束，比如可以将 INT 类型的字段，默认值设置为 0。将字符类型的默认值设置为空字符串 ‘’ 。同理，在查询中使用 not like 也无法使用索引，导致全表扫描</p>
+</blockquote>
+<ol start="6">
+<li><p>like 以通配符 % 开头索引失效</p>
+</li>
+<li><p>OR 前后存在非索引的列，索引失效</p>
+</li>
+<li><p>数据表和表的字符集统一使用 utf8mb4</p>
+</li>
+</ol>
+<h2 id="14-如何排查数据库查询速度比较慢的问题？"><a href="#14-如何排查数据库查询速度比较慢的问题？" class="headerlink" title="14.如何排查数据库查询速度比较慢的问题？"></a>14.如何排查数据库查询速度比较慢的问题？</h2><p>开启慢查询日志<br>SQL慢查询是指执行时间较长的SQL语句，可能导致系统性能下降和响应时间延长。通过以下步骤可以开启慢查询日志记录：</p>
+<p>#查询是否开启慢查询日志 slow_query_log显示ON说明已开启，显示OFF说明未开启</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">show</span> variables <span class="hljs-keyword">like</span> <span class="hljs-string">&#x27;%slow_query_log%&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>#开启慢查询日志</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">set</span> <span class="hljs-keyword">global</span> slow_query_log <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br></code></pre></td></tr></table></figure>
+
+<p>确认慢查询日志是否已开启 slow_query_log的值应该为ON，表示慢查询日志已经成功开启。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">show</span> variables <span class="hljs-keyword">like</span> <span class="hljs-string">&#x27;%slow_query_log%&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>#默认情况下，MySQL会将执行时间超过10秒的查询认定为慢查询</p>
+<p>设置全局的超过5秒就记录到日志文件中 如果等于0可以记录所有的SQL语句</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">set</span> <span class="hljs-keyword">global</span> long_query_time <span class="hljs-operator">=</span> <span class="hljs-number">5</span>;<br></code></pre></td></tr></table></figure>
+
+<p>慢查询日志的记录位置命令</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">show</span> variables <span class="hljs-keyword">like</span> <span class="hljs-string">&#x27;%slow_query_log_file%&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="15-SQL返回部分字段和返回全部字段有什么区别-应该是想问Select-与-Select-字段-的区别-？"><a href="#15-SQL返回部分字段和返回全部字段有什么区别-应该是想问Select-与-Select-字段-的区别-？" class="headerlink" title="15.SQL返回部分字段和返回全部字段有什么区别(应该是想问Select * 与 Select 字段 的区别)？"></a>15.SQL返回部分字段和返回全部字段有什么区别(应该是想问Select * 与 Select 字段 的区别)？</h2><p>1、查询效率上：select * 在系统解析的时候会多一步从系统表获取具体字段的步骤，因此会比select 全部字段多花时间，效率稍低。</p>
+<p>2、查询结果上：在表结构不修改的情况下结果相同，但是后者的顺序可以调整，前者则固定；而如果修改了表结构，前者能够获得新表结构的所有字段，后者则会在修改字段名或删除字段时报错，会在增加字段时不会输出新字段。</p>
+<p>3、应用场景上：select * 效率稍低但是能应对频繁调整的表结构，适应力强，可应用于开发环境，仅极少数特殊业务场景会在生产环境使用场景；后者效率稍高语意明确，更能清晰的表达业务的需求，强烈建议在生产环境中使用。</p>
+<h2 id="16-MySQL-索引的数据结构，B-树的优点。"><a href="#16-MySQL-索引的数据结构，B-树的优点。" class="headerlink" title="16.MySQL 索引的数据结构，B+ 树的优点。"></a>16.MySQL 索引的数据结构，B+ 树的优点。</h2><p>MySQL中常用的索引数据结构是B+树，B+树是一种多路搜索树，具有以下优点：</p>
+<ol>
+<li>高效的范围查询：B+树的叶子节点是按照顺序存储的，可以快速进行范围查询和排序操作。</li>
+<li>磁盘读写优化：B+树的非叶子节点只存储键值信息，不存储数据信息，可以减少磁盘读写次数，提高IO效率。</li>
+<li>支持高并发：B+树的读写操作是基于页的，可以减少锁的粒度，提高并发性能。</li>
+<li>索引高度稳定：B+树的高度稳定，查询效率稳定，不会因为数据量的增加而导致性能下降。</li>
+<li>支持快速插入和删除：B+树的叶子节点是链表结构，可以快速进行插入和删除操作。</li>
+</ol>
+<h2 id="17-分布式下，如何获取全局的唯一ID，有哪些方式？"><a href="#17-分布式下，如何获取全局的唯一ID，有哪些方式？" class="headerlink" title="17.分布式下，如何获取全局的唯一ID，有哪些方式？"></a>17.分布式下，如何获取全局的唯一ID，有哪些方式？</h2><h2 id="18-设计分布式下的唯一ID，你会考虑哪些因素？"><a href="#18-设计分布式下的唯一ID，你会考虑哪些因素？" class="headerlink" title="18.设计分布式下的唯一ID，你会考虑哪些因素？"></a>18.设计分布式下的唯一ID，你会考虑哪些因素？</h2><p>在分布式系统中，获取全局唯一ID是非常重要的。下面介绍几种获取全局唯一ID的方式：</p>
+<ol>
+<li>UUID：UUID是一种128位的全局唯一标识符，可以使用UUID算法生成唯一ID。UUID具有无序性、唯一性和方便生成等优点，可以用于分布式系统的唯一ID生成。</li>
+<li>雪花算法：雪花算法是一种基于时间戳、机器ID和序列号的算法，可以生成全局唯一ID。雪花算法具有高效性、可扩展性和可读性等优点，被广泛应用于分布式系统中。</li>
+</ol>
+<h1 id="二面"><a href="#二面" class="headerlink" title="二面"></a>二面</h1><h2 id="1-随着项目中的数据量不断增大，觉得会有哪些问题和挑战？如何解决？"><a href="#1-随着项目中的数据量不断增大，觉得会有哪些问题和挑战？如何解决？" class="headerlink" title="1.随着项目中的数据量不断增大，觉得会有哪些问题和挑战？如何解决？"></a>1.随着项目中的数据量不断增大，觉得会有哪些问题和挑战？如何解决？</h2><p>随着项目中的数据量不断增大，可能会出现以下问题和挑战：</p>
+<ol>
+<li>数据读写效率下降：随着数据量的增大，查询和写入数据的效率可能会下降，导致系统响应时间变慢。这时需要考虑优化数据库索引、分表分库等方式来提高数据读写效率。</li>
+<li>数据存储成本增加：随着数据量的增大，数据存储成本也会随之增加。这时需要考虑使用压缩和归档等方式来减少数据存储成本。</li>
+<li>数据安全性问题：随着数据量的增大，数据安全性问题也会变得更加重要。需要考虑加强数据加密、访问控制等方式来提高数据安全性。</li>
+<li>数据一致性问题：随着数据量的增大，数据一致性问题也会变得更加显著。需要考虑使用分布式事务、分布式锁等方式来解决数据一致性问题。</li>
+<li>数据备份和恢复问题：随着数据量的增大，数据备份和恢复也会变得更加困难。需要考虑使用分布式备份和恢复等方式来解决数据备份和恢复问题。</li>
+</ol>
+<p>为解决以上问题和挑战，可以采取以下措施：</p>
+<ol>
+<li>数据库优化：优化数据库索引、分表分库、数据库缓存等，提高数据读写效率。</li>
+<li>数据压缩和归档：使用数据压缩和归档等方式，减少数据存储成本。</li>
+<li>数据加密和访问控制：加强数据加密、访问控制等方式，提高数据安全性。</li>
+<li>分布式事务和分布式锁：使用分布式事务、分布式锁等方式，解决数据一致性问题。</li>
+<li>分布式备份和恢复：使用分布式备份和恢复等方式，解决数据备份和恢复问题。</li>
+</ol>
+<h2 id="2-数据量很大时，软件层面或设计层面有什么考虑？"><a href="#2-数据量很大时，软件层面或设计层面有什么考虑？" class="headerlink" title="2.数据量很大时，软件层面或设计层面有什么考虑？"></a>2.数据量很大时，软件层面或设计层面有什么考虑？</h2><p>当数据量很大时，软件层面或设计层面需要考虑以下几个方面：</p>
+<ol>
+<li>数据库设计：需要根据数据量的大小和业务需求，设计合理的数据库结构、索引和分表分库策略，以提高数据读写效率和可扩展性。</li>
+<li>数据存储和访问：需要考虑使用合适的数据存储和访问方式，例如使用缓存技术、分布式文件系统等方式，提高数据读写效率和可靠性。</li>
+<li>数据处理和分析：需要考虑使用合适的数据处理和分析工具，例如使用MapReduce、Spark等方式，处理和分析大规模数据，提高数据价值和应用效果。</li>
+<li>性能优化：需要对系统进行性能优化，例如使用异步编程、多线程等方式，提高系统的并发性能和响应时间。</li>
+<li>安全性和稳定性：需要考虑加强系统的安全性和稳定性，例如使用备份和恢复、灾备容灾等方式，保障系统的可靠性和稳定性。</li>
+<li>数据一致性：需要考虑解决数据一致性问题，例如使用分布式事务、分布式锁等方式，确保数据的一致性和可靠性。</li>
+</ol>
+<h2 id="3-MySQL-存储引擎。"><a href="#3-MySQL-存储引擎。" class="headerlink" title="3.MySQL 存储引擎。"></a>3.MySQL 存储引擎。</h2><p><strong>InnoDB和MyISAM</strong></p>
+<p>事务: InnoDB 是事务型的，可以使用 Commit 和 Rollback 语句。</p>
+<p>并发: MyISAM 只支持表级锁，而 InnoDB 还支持行级锁。</p>
+<p>外键: InnoDB 支持外键。</p>
+<p>备份: InnoDB 支持在线热备份。</p>
+<p>崩溃恢复: MyISAM 崩溃后发生损坏的概率比 InnoDB 高很多，而且恢复的速度也更慢。</p>
+<p>其它特性: MyISAM 支持压缩表和空间数据索引。</p>
+<h2 id="4-MySQL-的事务隔离级别。"><a href="#4-MySQL-的事务隔离级别。" class="headerlink" title="4.MySQL 的事务隔离级别。"></a>4.MySQL 的事务隔离级别。</h2><p><strong>未提交读(READ UNCOMMITTED)</strong></p>
+<p>事务中的修改，即使没有提交，对其它事务也是可见的。</p>
+<p><strong>提交读(READ COMMITTED)</strong></p>
+<p>一个事务只能读取已经提交的事务所做的修改。换句话说，一个事务所做的修改在提交之前对其它事务是不可见的。</p>
+<p><strong>可重复读(REPEATABLE READ)</strong></p>
+<p>保证在同一个事务中多次读取同样数据的结果是一样的。</p>
+<p><strong>可串行化(SERIALIZABLE)</strong></p>
+<p>强制事务串行执行。</p>
+<table>
+<thead>
+<tr>
+<th align="center">隔离级别</th>
+<th align="center">脏读</th>
+<th align="center">不可重复读</th>
+<th align="center">幻影读</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">未提交读</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td align="center">提交读</td>
+<td align="center">×</td>
+<td align="center">√</td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td align="center">可重复读</td>
+<td align="center">×</td>
+<td align="center">×</td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td align="center">可串行化</td>
+<td align="center">×</td>
+<td align="center">×</td>
+<td align="center">×</td>
+</tr>
+</tbody></table>
+<h2 id="5-MySQL-为什么加索引后查询速度会快很多？"><a href="#5-MySQL-为什么加索引后查询速度会快很多？" class="headerlink" title="5.MySQL 为什么加索引后查询速度会快很多？"></a>5.MySQL 为什么加索引后查询速度会快很多？</h2><ol>
+<li><p>减少磁盘IO操作：当我们使用MySQL查询大量数据时，查询语句需要在磁盘上扫描表来找到符合条件的数据。如果没有索引，每行数据都需要读取一次，增加了磁盘IO操作。而有了索引，MySQL只需要扫描索引，然后再去读取符合条件的行，减少了磁盘IO操作。</p>
+</li>
+<li><p>加快查找速度：索引建立在一列或多列上，这将大大加快MySQL的查询速度。就像字典的目录一样，索引将数据按顺序排列，这样可以快速查找特定的数据，而不需要遍历整个表。</p>
+</li>
+<li><p>提高排序性能：如果我们需要对查询结果进行排序，有索引的情况下MySQL可以快速地读取数据并进行排序。这将加快MySQL的性能，因为没有索引将会麻烦地进行排序。</p>
+</li>
+</ol>
+<h2 id="6-二级索引检索方式是什么样的？"><a href="#6-二级索引检索方式是什么样的？" class="headerlink" title="6.二级索引检索方式是什么样的？"></a>6.二级索引检索方式是什么样的？</h2><p><strong>回表查询</strong></p>
+<p>当使用二级索引进行查询时，MySQL首先会根据二级索引找到符合条件的记录所在的位置，然后再通过主键值去访问数据表中的对应记录，这个过程称为回表查询（或者称为二次查询）。回表查询的优点是可以减少二级索引的存储空间和减少索引更新的成本，但是会增加查询的开销和IO操作。</p>
+<h2 id="7-Autowired-和-Resource-注解有什么区别？"><a href="#7-Autowired-和-Resource-注解有什么区别？" class="headerlink" title="7.@Autowired 和 @Resource 注解有什么区别？"></a>7.@Autowired 和 @Resource 注解有什么区别？</h2><h3 id="注解的作用域"><a href="#注解的作用域" class="headerlink" title="注解的作用域"></a>注解的作用域</h3><p>@Resource和@Autowired注解的作用域不同，@Resource注解默认按照名称进行注入，而@Autowired注解默认按照类型进行注入。</p>
+<p>@Resource注解可以在字段、方法、构造函数上使用，而@Autowired注解可以在字段、方法、构造函数、以及参数上使用。</p>
+<h3 id="注解的来源"><a href="#注解的来源" class="headerlink" title="注解的来源"></a>注解的来源</h3><p>@Resource和@Autowired注解来自于不同的包，@Resource注解来自于<code>javax.annotation.Resource</code>包，而@Autowired注解来自于<code>org.springframework.beans.factory.annotation.Autowired</code>包。</p>
+<h3 id="属性名称"><a href="#属性名称" class="headerlink" title="属性名称"></a>属性名称</h3><p>@Resource注解中的name属性指定了注入对象的名称，而@Autowired注解中的name属性指定了注入对象的bean名称。当一个bean有多个实例时，可以使用name属性指定注入哪个bean实例。</p>
+<h3 id="类型匹配"><a href="#类型匹配" class="headerlink" title="类型匹配"></a>类型匹配</h3><p>@Autowired注解在类型匹配上更加灵活，它可以匹配同类型的bean，也可以匹配子类型的bean，而@Resource注解只能匹配同类型的bean。</p>
+<h3 id="可选属性"><a href="#可选属性" class="headerlink" title="可选属性"></a>可选属性</h3><p>@Resource注解有一个可选的属性，即mappedName属性，用于指定JNDI名称，而@Autowired注解没有可选属性。</p>
+<h2 id="8-JWT-好处在哪里？"><a href="#8-JWT-好处在哪里？" class="headerlink" title="8.JWT 好处在哪里？"></a>8.JWT 好处在哪里？</h2><p>JWT（JSON Web Token）是一种标准化的身份验证和授权解决方案，它将用户信息和权限信息封装在一个安全的、可靠的、自包含的JSON对象中，通过数字签名来保证数据的完整性和安全性，并可在多个系统之间共享和传递。</p>
+<p>JWT有以下几个优点和好处：</p>
+<p>1.无状态</p>
+<p>JWT是无状态的，即服务器端不需要保存任何用户信息，所有的信息都包含在JWT中。这样就可以在多个系统之间共享和传递用户信息，方便实现分布式系统和微服务架构。</p>
+<p>2.自包含</p>
+<p>JWT是自包含的，即包含了用户身份信息和权限信息，可以在客户端保存，无需频繁向服务器请求，减少了网络开销和服务器压力。</p>
+<p>3.安全性高</p>
+<p>JWT使用数字签名来保证数据的完整性和安全性，防止数据被篡改和伪造，可以有效防止跨站点脚本（XSS）和跨站点请求伪造（CSRF）等攻击。</p>
+<h2 id="9-HTTP-协议特点有哪些？"><a href="#9-HTTP-协议特点有哪些？" class="headerlink" title="9.HTTP 协议特点有哪些？"></a>9.HTTP 协议特点有哪些？</h2><p>HTTP（Hypertext Transfer Protocol）是一种应用层协议，是Web应用的基础，它主要用于客户端和服务器之间的通信。HTTP协议的特点如下：</p>
+<p>1.简单快速</p>
+<p>HTTP协议采用简单的请求-响应模型，请求报文和响应报文的格式都很简单，可以快速地进行通信和传输。</p>
+<p>2.可扩展性强</p>
+<p>HTTP协议的请求报文和响应报文都是基于文本的，可以通过自定义头部、请求方法、状态码等方式来扩展和定制协议的功能和特性，具有很好的灵活性和可扩展性。</p>
+<p>3.无连接</p>
+<p>HTTP协议是无连接的，即每次请求和响应都是独立的，服务器不会保留与客户端的任何连接信息，这样可以减少服务器的负担和资源消耗，但也会增加网络延迟和连接开销。</p>
+<p>4.无状态</p>
+<p>HTTP协议是无状态的，即服务器不会保存任何客户端的状态信息，每个请求都是相互独立的，这样可以减少服务器的负担和资源消耗，但也会增加客户端的负担和复杂度。</p>
+<h2 id="10-HTTP-1-1-相比-HTTP-1-0-有哪些重要改进？"><a href="#10-HTTP-1-1-相比-HTTP-1-0-有哪些重要改进？" class="headerlink" title="10.HTTP 1.1 相比 HTTP 1.0 有哪些重要改进？"></a>10.HTTP 1.1 相比 HTTP 1.0 有哪些重要改进？</h2><p>HTTP 1.1 相比 HTTP 1.0 有以下几个重要的改进：</p>
+<p>1.持久连接</p>
+<p>HTTP 1.1 引入了持久连接（persistent connection），即客户端和服务器之间的连接可以被重复使用，多个请求可以在同一个连接上进行，避免了每次请求都需要建立和关闭连接的开销，提高了网络性能和效率。</p>
+<p>2.流水线式请求处理</p>
+<p>HTTP 1.1 支持流水线式请求处理（pipelining），即客户端可以在一个连接上同时发送多个请求，服务器可以以任意顺序响应这些请求，避免了请求之间的等待和延迟，提高了网络性能和效率。</p>
+<p>3.分块传输编码</p>
+<p>HTTP 1.1 引入了分块传输编码（chunked transfer encoding），即服务器可以将响应数据分成多个块，每个块都包含大小和数据，可以在传输过程中逐个发送，避免了等待整个响应数据的传输，提高了网络性能和效率。</p>
+<p>4.Host 头部</p>
+<p>HTTP 1.1 引入了 Host 头部，即客户端可以在请求报文中指定请求的主机名和端口号，使得多个域名可以共享同一个IP地址，避免了请求被路由到错误的服务器上。</p>
+<p>5.缓存控制</p>
+<p>HTTP 1.1 引入了更加细粒度的缓存控制机制，包括 Cache-Control 头部、ETag 头部、If-Modified-Since 头部等，可以更好地控制缓存的有效性和命中率，减少了网络传输和资源消耗。</p>
+<h2 id="11-HTTP-1-1-如何每次请求都建立一个连接？"><a href="#11-HTTP-1-1-如何每次请求都建立一个连接？" class="headerlink" title="11.HTTP 1.1 如何每次请求都建立一个连接？"></a>11.HTTP 1.1 如何每次请求都建立一个连接？</h2><p>HTTP 1.1 引入了持久连接（persistent connection）机制，即客户端和服务器之间的连接可以被重复使用，多个请求可以在同一个连接上进行。但是，如果需要每次请求都建立一个新的连接，可以采用以下两种方式：</p>
+<p><strong>强制关闭连接</strong></p>
+<p>客户端可以在请求报文中添加 Connection: close 头部，告知服务器在响应完成后强制关闭连接，这样服务器就会在响应完成后立即关闭连接，下次请求需要重新建立连接。</p>
+<p><strong>使用无缓存的代理服务器</strong></p>
+<p>客户端可以通过使用无缓存的代理服务器来实现每次请求都建立一个新的连接，无缓存的代理服务器不会保存任何客户端和服务器之间的连接信息，每次请求都需要重新建立连接。</p>
+<h2 id="12-Spring-AOP-实现日志记录功能，为什么用-AOP？"><a href="#12-Spring-AOP-实现日志记录功能，为什么用-AOP？" class="headerlink" title="12.Spring AOP 实现日志记录功能，为什么用 AOP？"></a>12.Spring AOP 实现日志记录功能，为什么用 AOP？</h2><ol>
+<li>横切关注点</li>
+</ol>
+<p>日志记录功能通常是一个横切关注点，即在应用程序的多个组件中都可能需要记录日志。使用传统的编程方式，需要在每个组件中都编写相同的日志记录代码，代码冗余，且难以维护。而使用 Spring AOP，可以在一个切面中实现日志记录功能，通过将切面织入到应用程序中，可以自动地将日志记录功能应用到所有需要的组件中，避免了代码冗余和维护困难的问题。</p>
+<ol>
+<li>低耦合性</li>
+</ol>
+<p>使用 Spring AOP 实现日志记录功能，可以将日志记录和业务逻辑分离，实现低耦合性。即业务逻辑代码不需要关心日志记录的细节，将日志记录功能委托给切面处理，业务逻辑代码只关注自己的业务逻辑，可以提高代码的可读性和可维护性。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%9D%A2%E7%BB%8F/" class="category-chain-item">面经</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%9D%A2%E7%BB%8F/">#面经</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>面经2023-07-06</div>
+      <!-- <div>http://example.com/2023/07/06/Interview-Exp-20230706/</div> -->
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>鸭粥</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/07/06/JMM/" title="JAVA内存模型（JMM）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">JAVA内存模型（JMM）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/29/Interview-Exp-2023-06-29/" title="面经2023-06-29">
+                        <span class="hidden-mobile">面经2023-06-29</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,731 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.JPG">
+  <link rel="icon" href="/img/avatar.JPG">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="鸭粥">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="携程-JAVA后端实习来源： 牛客 xiang314159265 https:&#x2F;&#x2F;www.nowcoder.com&#x2F;feed&#x2F;main&#x2F;detail&#x2F;8a7a4595f2ba40658d01dc87056d1d44?sourceSSR&#x3D;users 1.栈和队列的区别，分别用在什么场景栈（Stack）是一种线性数据结构，它的特点是先进后出（Last In First Out，LIFO）。栈可以看作是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Interview-Exp-20230710">
+<meta property="og:url" content="http://example.com/2023/07/10/Interview-Exp-20230710/index.html">
+<meta property="og:site_name" content="鸭粥的Blog">
+<meta property="og:description" content="携程-JAVA后端实习来源： 牛客 xiang314159265 https:&#x2F;&#x2F;www.nowcoder.com&#x2F;feed&#x2F;main&#x2F;detail&#x2F;8a7a4595f2ba40658d01dc87056d1d44?sourceSSR&#x3D;users 1.栈和队列的区别，分别用在什么场景栈（Stack）是一种线性数据结构，它的特点是先进后出（Last In First Out，LIFO）。栈可以看作是">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-10T04:20:16.000Z">
+<meta property="article:modified_time" content="2023-07-18T02:51:59.251Z">
+<meta property="article:author" content="鸭粥">
+<meta property="article:tag" content="面经">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Interview-Exp-20230710 - 鸭粥的Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鸭粥的Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/avatar.JPG') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Interview-Exp-20230710"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-10 12:20" pubdate>
+          2023年7月10日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Interview-Exp-20230710</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="携程-JAVA后端实习"><a href="#携程-JAVA后端实习" class="headerlink" title="携程-JAVA后端实习"></a>携程-JAVA后端实习</h1><p>来源： 牛客 xiang314159265</p>
+<p><a target="_blank" rel="noopener" href="https://www.nowcoder.com/feed/main/detail/8a7a4595f2ba40658d01dc87056d1d44?sourceSSR=users">https://www.nowcoder.com/feed/main/detail/8a7a4595f2ba40658d01dc87056d1d44?sourceSSR=users</a></p>
+<h2 id="1-栈和队列的区别，分别用在什么场景"><a href="#1-栈和队列的区别，分别用在什么场景" class="headerlink" title="1.栈和队列的区别，分别用在什么场景"></a>1.栈和队列的区别，分别用在什么场景</h2><p>栈（Stack）是一种线性数据结构，它的特点是先进后出（Last In First Out，LIFO）。栈可以看作是一个容器，只能在容器的一端进行插入和删除操作，这一端被称为栈顶。</p>
+<p>栈的主要应用场景包括：</p>
+<ol>
+<li>表达式求值：在中缀表达式转后缀表达式或前缀表达式的过程中，需要使用栈来保存操作符，以便按照正确的优先级进行计算。</li>
+<li>函数调用：当函数被调用时，需要将调用该函数的程序的状态信息（包括程序计数器和局部变量等）保存到栈中，以便在函数返回时恢复这些状态信息。</li>
+</ol>
+<p>队列（Queue）也是一种线性数据结构，它的特点是先进先出（First In First Out，FIFO）。队列可以看作是一个管道，数据只能从管道的一端进入，从另一端出去。</p>
+<p>队列的主要应用场景包括：</p>
+<ol>
+<li>线程池：线程池将任务放入队列中，线程池中的线程从队列中取出任务并执行。</li>
+<li>消息队列：消息队列是一种常见的消息传递机制，多个进程可以共享同一个消息队列，将消息放入队列中，其他进程可以从队列中取出消息并进行处理。</li>
+</ol>
+<h2 id="2-BIO、AIO、NIO、多路复用是什么"><a href="#2-BIO、AIO、NIO、多路复用是什么" class="headerlink" title="2.BIO、AIO、NIO、多路复用是什么"></a>2.BIO、AIO、NIO、多路复用是什么</h2><p>详情见：<a target="_blank" rel="noopener" href="https://bigducksoup.github.io/2023/07/18/IO-detail/">https://bigducksoup.github.io/2023/07/18/IO-detail/</a></p>
+<h2 id="3-多路复用相比NIO的优势"><a href="#3-多路复用相比NIO的优势" class="headerlink" title="3.多路复用相比NIO的优势"></a>3.多路复用相比NIO的优势</h2><p>非阻塞IO和IO多路复用都是用于提高I&#x2F;O操作效率的技术，但它们之间有一些区别。</p>
+<p>非阻塞IO是指在进行I&#x2F;O操作时，如果数据没有准备好或者无法立即读取或写入，I&#x2F;O操作不会阻塞线程，而是立即返回一个错误码或者空值，线程可以继续执行其他任务。在Java中，非阻塞IO通常使用Java NIO库中的Channel和Buffer类实现。使用非阻塞IO技术时，<strong>需要采用轮询的方式不断地检查I&#x2F;O操作是否已经准备好，这会带来一定的系统开销</strong>。</p>
+<p>IO多路复用是指通过一种机制，可以监控多个I&#x2F;O流（例如网络套接字）的状态，当其中任意一个I&#x2F;O流有数据可读或可写时，就通知相应的线程进行读写操作。在Java中，IO多路复用通常使用Java NIO库中的Selector类实现。使用IO多路复用技术时，只需要一个线程就可以同时处理多个I&#x2F;O操作，从而避免了创建多个线程的开销，同时也提高了系统的吞吐量。</p>
+<p>因此，非阻塞IO和IO多路复用都可以提高I&#x2F;O操作的效率，但它们的实现方式有所不同。非阻塞IO需要轮询检查I&#x2F;O操作是否已准备好，而IO多路复用可以监控多个I&#x2F;O流的状态，只需要一个线程就可以处理多个I&#x2F;O操作。</p>
+<h2 id="4-Hashmap底层原理，线程安全吗"><a href="#4-Hashmap底层原理，线程安全吗" class="headerlink" title="4.Hashmap底层原理，线程安全吗"></a>4.Hashmap底层原理，线程安全吗</h2><p>数组+链表+红黑树</p>
+<p>JDK1.8 中，由于多线程对HashMap进行put操作，调用了HashMap#putVal()，具体原因：假设两个线程A、B都在进行put操作，并且hash函数计算出的插入下标是相同的，当线程A执行完第六行代码后由于时间片耗尽导致被挂起，而线程B得到时间片后在该下标处插入了元素，完成了正常的插入，然后线程A获得时间片，由于之前已经进行了hash碰撞的判断，所有此时不会再进行判断，而是直接进行插入，这就导致了线程B插入的数据被线程A覆盖了，从而线程不安全。</p>
+<h2 id="5-红黑树与其他树的优缺点比较"><a href="#5-红黑树与其他树的优缺点比较" class="headerlink" title="5.红黑树与其他树的优缺点比较"></a>5.红黑树与其他树的优缺点比较</h2><p>红黑树是一种自平衡二叉查找树，它与其他二叉查找树（如AVL树、Splay树等）相比具有一些优缺点。</p>
+<p>优点：</p>
+<ol>
+<li>自平衡性：红黑树能够自动调整自己的结构，保持平衡，使得查找、插入、删除等操作的时间复杂度都能够保持在O(log n)级别。</li>
+<li>插入和删除操作效率高：红黑树采用颜色标记和旋转操作来维护平衡，相比于其他自平衡二叉查找树，红黑树的旋转操作次数较少，因此插入和删除操作效率较高。</li>
+<li>适用于大规模数据存储和动态查询：红黑树在大规模数据存储和动态查询方面表现优异，它能够支持高效的插入、删除、查找等操作。</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>空间占用较大：红黑树的每个节点都需要存储额外的颜色信息，因此空间占用较大。</li>
+<li>难以实现：相比于其他二叉查找树，红黑树的实现较为复杂，旋转操作需要考虑多种情况，因此实现难度较大。</li>
+<li>查找操作效率相对较低：尽管红黑树的查找操作时间复杂度为O(log n)，但是相比于其他平衡树（如AVL树）的查找效率稍低。</li>
+</ol>
+<p>总的来说，红黑树在实际应用中表现良好，尤其适用于大规模数据存储和动态查询的场景。但是在一些特定的应用场景下，其他平衡树（如AVL树）可能更为适合。</p>
+<h2 id="6-ConcurrentHashmap底层原理"><a href="#6-ConcurrentHashmap底层原理" class="headerlink" title="6.ConcurrentHashmap底层原理"></a>6.ConcurrentHashmap底层原理</h2><p>ConcurconrentHashMap底层可有老多东西了，1.7版本ConcurconrentHashMap底层采用的是分段锁，1.8版本优化为CAS+synchnoized的方式</p>
+<p>相比于HashMap，ConcurrentMap的Node在value和下个节点都加上了volatile，以保证val的可见性。</p>
+<h2 id="7-讲一下熟悉的一个设计模式"><a href="#7-讲一下熟悉的一个设计模式" class="headerlink" title="7.讲一下熟悉的一个设计模式"></a>7.讲一下熟悉的一个设计模式</h2><p>略</p>
+<h2 id="8-Volatile和synchronized区别"><a href="#8-Volatile和synchronized区别" class="headerlink" title="8.Volatile和synchronized区别"></a>8.Volatile和synchronized区别</h2><p>Volatile和synchronized都是Java中用于实现多线程同步的关键字，但它们的作用和使用方式略有不同。</p>
+<ol>
+<li>作用：Volatile用于保证变量的可见性和禁止指令重排序，而synchronized用于保证线程间的互斥和同步执行。</li>
+<li>使用方式：Volatile只需要在变量声明时加上volatile关键字即可，而synchronized需要在方法或代码块中加上synchronized关键字，并指定同步锁对象。</li>
+<li>适用范围：Volatile适用于单个变量的读写操作，而synchronized适用于多个线程之间的协调和同步。</li>
+<li>性能影响：Volatile的性能影响比synchronized要小，因为Volatile不会阻塞线程。而synchronized由于需要获取锁资源，可能会导致线程阻塞和性能下降。</li>
+<li>功能限制：Volatile不能保证原子性，也不能替代synchronized在复杂的多线程同步场景中的使用。synchronized能够保证线程安全和原子性。</li>
+</ol>
+<h2 id="9-Java类是怎么加载的"><a href="#9-Java类是怎么加载的" class="headerlink" title="9.Java类是怎么加载的"></a>9.Java类是怎么加载的</h2><p>Java类加载（Class Loading）是Java虚拟机（JVM）的核心特性之一，它是将Java字节码文件（.class文件）加载到JVM中，并转换为Java类对象的过程。Java类加载分为三个步骤：加载、连接和初始化。</p>
+<ol>
+<li>加载：类加载的第一步是加载，它是指将类的字节码文件加载到JVM中。在加载过程中，JVM会根据类的全限定名查找类的字节码文件，并将其读取到内存中。类的字节码文件可以从多种来源获取，包括本地文件系统、网络、JAR包、ZIP文件等。</li>
+<li>连接：连接是指将类的二进制数据合并到JVM的运行时数据区中的过程。连接阶段分为三个子阶段：验证、准备和解析。<ul>
+<li>验证：验证阶段是对字节码的验证，确保字节码符合Java虚拟机规范，并且不会对JVM的安全性造成威胁。</li>
+<li>准备：准备阶段是为类的静态变量分配内存，并赋予默认初始值的过程。这些静态变量在JVM启动时就会被分配内存。</li>
+<li>解析：解析阶段是将符号引用转换为实际引用的过程。</li>
+</ul>
+</li>
+<li>初始化：初始化是类加载的最后一个阶段，它是指执行类的静态初始化代码块的过程。在初始化过程中，JVM会按照静态初始化代码块的顺序依次执行，直到所有的静态初始化代码块都执行完毕。</li>
+</ol>
+<h2 id="10-讲一下虚拟内存是什么"><a href="#10-讲一下虚拟内存是什么" class="headerlink" title="10.讲一下虚拟内存是什么"></a>10.讲一下虚拟内存是什么</h2><p>每个进程创建加载的时候，会被分配一个大小为4G的连续的虚拟地址空间，虚拟的意思就是，其实这个地址空间时不存在的，仅仅是每个进程“认为”自己拥有4G的内存，而实际上，它用了多少空间，操作系统就在磁盘上划出多少空间给它，等到进程真正运行的时候，需要某些数据并且数据不在物理内存中，才会触发缺页异常，进行数据拷贝</p>
+<h2 id="11-多级页表的优点"><a href="#11-多级页表的优点" class="headerlink" title="11.多级页表的优点"></a>11.多级页表的优点</h2><p>多级页表是一种操作系统中常见的虚拟内存管理技术，它将虚拟地址空间分成多个层次，每个层次都有自己的页表。多级页表相较于单级页表的优点包括：</p>
+<ol>
+<li>空间利用率高：多级页表可以有效地减小页表的大小，从而减小了内存的占用。由于每个页表项都可以覆盖更多的虚拟地址空间，因此多级页表可以更有效地利用内存空间。</li>
+<li>快速访问页表：由于多级页表缩小了每个页表的大小，因此可以更快地访问页表。当需要查找某个虚拟地址对应的物理地址时，操作系统只需要访问少量的页表项，从而提高了访问速度。</li>
+<li>灵活性高：多级页表允许操作系统根据需要动态地调整页表的大小和层次。当系统的虚拟地址空间变大时，可以增加页表的层次；当虚拟地址空间较小时，可以减少页表的层次。这种灵活性可以使操作系统更加适应不同的内存管理需求。</li>
+</ol>
+<h2 id="12-用户态和内核态，以及如何在两个状态间转换"><a href="#12-用户态和内核态，以及如何在两个状态间转换" class="headerlink" title="12.用户态和内核态，以及如何在两个状态间转换"></a>12.用户态和内核态，以及如何在两个状态间转换</h2><p>用户态和内核态是计算机操作系统中的两种运行级别，也称为特权级别。用户态是指程序在普通的执行状态下运行，只能访问自己的内存和CPU资源，而内核态是指程序在特权级别较高的状态下运行，可以访问系统的所有资源，包括系统内存、I&#x2F;O设备等。</p>
+<p>在用户态下，程序只能访问自己的内存空间和CPU资源，不能直接访问系统资源，必须通过系统调用（system call）来请求操作系统的服务。这些服务包括文件操作、网络通信、进程管理等。当程序需要使用这些服务时，必须通过系统调用进入内核态，由内核完成所需的操作，然后再返回用户态继续执行。</p>
+<p>在内核态下，程序可以直接访问系统资源，包括系统内存、I&#x2F;O设备等。内核态的程序通常是操作系统的内核模块或驱动程序，它们需要运行在特权级别较高的状态下才能完成系统级别的任务。</p>
+<p>在操作系统中，用户态和内核态之间的切换是通过系统调用实现的。当程序需要调用系统服务时，它需要向操作系统发出系统调用请求，操作系统会检查请求的合法性，并将程序的执行状态从用户态切换到内核态，执行所需的操作，并将执行结果返回给程序，最后再将程序的执行状态从内核态切换回用户态，继续执行程序的下一条指令。</p>
+<h2 id="13-什么是索引，用的什么数据结构"><a href="#13-什么是索引，用的什么数据结构" class="headerlink" title="13.什么是索引，用的什么数据结构"></a>13.什么是索引，用的什么数据结构</h2><p>在计算机科学中，索引（Index）是一种数据结构，用于加快数据的检索速度。索引通常是在数据库或文件系统中使用，常见的索引数据结构包括哈希表、B树（或B+树）等。索引可以使数据的访问更快，通过索引可以快速地定位数据的位置，从而减少了数据的扫描时间。</p>
+<h2 id="14-如果一个数据库查询过慢，你会通过什么方式去排查，有哪些方案"><a href="#14-如果一个数据库查询过慢，你会通过什么方式去排查，有哪些方案" class="headerlink" title="14.如果一个数据库查询过慢，你会通过什么方式去排查，有哪些方案"></a>14.如果一个数据库查询过慢，你会通过什么方式去排查，有哪些方案</h2><p>开启慢查询日志，使用explain解释SQL</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%9D%A2%E7%BB%8F/" class="category-chain-item">面经</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%9D%A2%E7%BB%8F/">#面经</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Interview-Exp-20230710</div>
+      <!-- <div>http://example.com/2023/07/10/Interview-Exp-20230710/</div> -->
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>鸭粥</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/07/18/IO-detail/" title="IO详解">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">IO详解</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/06/JMM/" title="JAVA内存模型（JMM）">
+                        <span class="hidden-mobile">JAVA内存模型（JMM）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

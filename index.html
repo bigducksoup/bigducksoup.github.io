@@ -239,6 +239,128 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2023/08/03/lock-escalation/" target="_self">
+          synchronized锁升级
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/08/03/lock-escalation/" target="_self">
+        <div>
+          synchronized锁升级在 Java 中，每个对象中都隐藏着一把锁，而 synchronized 关键字就是激活这把隐式锁的把手（开关）。 在 JDK 1.6 之前，使用 synchronized 关键字需要依赖于底层操作系统的 Mutex Lock 实现，挂起线程和恢复线程都需要转入内核态来完成，也就是说阻塞或唤醒一个 Java 线程都需要系统去切换 CPU 状态，这种状态的切换需要消耗处
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-08-03 16:51" pubdate>
+              2023-08-03
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/JAVA/" class="category-chain-item">JAVA</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/note/">#note</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2023/08/01/hashmap-length/" target="_self">
+          Java中HashMap的长度为什么是2的幂次方
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/08/01/hashmap-length/" target="_self">
+        <div>
+          Java中HashMap的长度为什么是2的幂次方计算下标为了让哈希值更加均匀地分布在哈希表中，Java中的HashMap实现使用了一个叫做“扰动函数”（hashing function）的方法，将输入的键值转换成一个哈希值，然后对这个值对对数组的长度取模运算，得到下标。 1i = (n - 1) &amp; hash //n为hashmap的长度 i为下标    取余(%)操作中如果除数是 2 的
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-08-01 13:05" pubdate>
+              2023-08-01
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/JAVA/" class="category-chain-item">JAVA</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/note/">#note</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2023/07/27/AQS/" target="_self">
           AQS详解
         </a>
@@ -714,128 +836,6 @@
             <i class="iconfont icon-tags"></i>
             
               <a href="/tags/%E9%9D%A2%E7%BB%8F/">#面经</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/29/Interview-Exp-2023-06-29/" target="_self">
-          面经2023-06-29
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/29/Interview-Exp-2023-06-29/" target="_self">
-        <div>
-          字节-商业技术来源：牛客 小小啊啊啊啊 https://www.nowcoder.com/feed/main/detail/d49c548611cc47e28ed8bd96db906ba3?sourceSSR=users 1.布隆过滤器怎么初始化的 确定预期元素数量：首先需要确定预期元素数量，即布隆过滤器将要处理多少个元素。这个数量将决定布隆过滤器的大小。  确定误差率：其次需要确定误差率，即布隆
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-29 09:33" pubdate>
-              2023-06-29
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E9%9D%A2%E7%BB%8F/" class="category-chain-item">面经</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E9%9D%A2%E7%BB%8F/">#面经</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/06/13/redis-cache-coherence/" target="_self">
-          redis-数据一致性
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/13/redis-cache-coherence/" target="_self">
-        <div>
-          redis与数据库的数据一致性解决方案1.一致性一致性是指系统中各节点数据保持一致。分布式系统中，可以理解为多个节点中的数据是一致的。 一致性根据严苛程度分类： 强一致性：写进去的数据是什么，读出来的数据就是什么，对性能影响最大； 弱一致性：数据写入成功后，系统不保证能立刻读出最新的数据，也不承诺多久之后数据可以达到一致，但保证到某个时间级别后，数据能达到一致； 最终一致性：最终一致性是弱一致性的
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-06-13 14:55" pubdate>
-              2023-06-13
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/redis/" class="category-chain-item">redis</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/note/">#note</a>
             
           </div>
         

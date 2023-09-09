@@ -1,0 +1,735 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.JPG">
+  <link rel="icon" href="/img/avatar.JPG">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="鸭粥">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="MVCC 多版本并发控制MVCC，全称Multi-Version Concurrency Control，即多版本并发控制。MVCC是一种并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问，在编程语言中实现事务内存。 MVCC在MySQL InnoDB中的实现主要是为了提高数据库并发性能，用更好的方式去处理读-写冲突，做到即使有读写冲突时，也能做到不加锁，非阻塞并发读 MySQL中的M">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySql中的MVCC（多版本并发控制）">
+<meta property="og:url" content="http://example.com/2023/09/09/mvcc/index.html">
+<meta property="og:site_name" content="鸭粥的Blog">
+<meta property="og:description" content="MVCC 多版本并发控制MVCC，全称Multi-Version Concurrency Control，即多版本并发控制。MVCC是一种并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问，在编程语言中实现事务内存。 MVCC在MySQL InnoDB中的实现主要是为了提高数据库并发性能，用更好的方式去处理读-写冲突，做到即使有读写冲突时，也能做到不加锁，非阻塞并发读 MySQL中的M">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/mvcc/undolog-chain.png">
+<meta property="og:image" content="http://example.com/img/mvcc/readview.png">
+<meta property="og:image" content="http://example.com/img/mvcc/rc-readview.png">
+<meta property="og:image" content="http://example.com/img/mvcc/rc-readview-example-1.png">
+<meta property="og:image" content="http://example.com/img/mvcc/rc-readview-example-2.png">
+<meta property="og:image" content="http://example.com/img/mvcc/rr-readview.png">
+<meta property="og:image" content="http://example.com/img/mvcc/rr-readview-example.png">
+<meta property="article:published_time" content="2023-09-09T14:32:13.000Z">
+<meta property="article:modified_time" content="2023-09-09T15:57:18.337Z">
+<meta property="article:author" content="鸭粥">
+<meta property="article:tag" content="note">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/mvcc/undolog-chain.png">
+  
+  
+  
+  <title>MySql中的MVCC（多版本并发控制） - 鸭粥的Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鸭粥的Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/avatar.JPG') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MySql中的MVCC（多版本并发控制）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-09 22:32" pubdate>
+          2023年9月9日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          23 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MySql中的MVCC（多版本并发控制）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="MVCC-多版本并发控制"><a href="#MVCC-多版本并发控制" class="headerlink" title="MVCC 多版本并发控制"></a>MVCC 多版本并发控制</h1><p><code>MVCC</code>，全称<code>Multi-Version Concurrency Control</code>，即多版本并发控制。MVCC是一种并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问，在编程语言中实现事务内存。</p>
+<p>MVCC在MySQL InnoDB中的实现主要是为了提高数据库并发性能，用更好的方式去处理读-写冲突，做到即使有读写冲突时，也能做到不加锁，非阻塞并发读</p>
+<p>MySQL中的MVCC基于undo log版本链，和Read View实现。</p>
+<h2 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h2><p><strong>什么是undo log？</strong></p>
+<p>撤销日志，在数据库事务开始之前，MYSQL会去记录更新前的数据到undo log文件中。如果事务回滚或者数据库崩溃时，可以利用undo log日志中记录的日志信息进行回退。同时也可以提供多版本并发控制下的读(MVCC)。</p>
+<p><strong>undo log的生命周期</strong></p>
+<p>undo log产生： 在事务开始之前生成<br>undo log销毁： 当事务提交之后，undo log并不能立马被删除，而是放入待清理的链表，由purge线程判断是否由其他事务在使用undo段中表的上一个事务之前的版本信息，决定是否可以清理undo log的日志空间。<br>注意： undo log也会生产redo log，undo log也要实现持久性保护。</p>
+<h2 id="undo-log版本链"><a href="#undo-log版本链" class="headerlink" title="undo log版本链"></a>undo log版本链</h2><p>多个事务并行操作某一行数据时，不同事务对该行数据的修改会产生多个版本，然后通过回滚指针（roll_pointer），连成一个链表，这个链表就称为<strong>版本链</strong>。</p>
+<p><img src="/../img/mvcc/undolog-chain.png" srcset="/img/loading.gif" lazyload alt="undolog-chain"></p>
+<p>我们可以看到版本链中的每条记录有<strong>TRX_ID</strong>，和<strong>DB_ROLL_PTR</strong>两个重要的字段</p>
+<p>其中 <strong>TRX_ID</strong> 代表着当前记录的事务ID。<strong>DB_ROLL_PTR</strong>指向了上一条undo log</p>
+<p>每当一个事务修改了一条记录时，都会产生一条关于这个记录的undo log，并插入undo log版本链中，记录当前事务ID，并指向此条记录的上一条undolog</p>
+<h2 id="当前读和快照读"><a href="#当前读和快照读" class="headerlink" title="当前读和快照读"></a>当前读和快照读</h2><p>什么是MySQL InnoDB下的当前读和快照读?</p>
+<ul>
+<li><p>当前读<br>像select lock in share mode(<code>共享锁</code>), select for update ; update, insert ,delete(<code>排他锁</code>)这些操作都是一种当前读，为什么叫当前读？就是它读取的是记录的最新版本，读取时还要保证其他并发事务不能修改当前记录，会对读取的记录进行加锁</p>
+</li>
+<li><p>快照读<br>像<code>不加锁</code>的select操作就是快照读，即不加锁的非阻塞读；快照读的前提是隔离级别不是串行级别，串行级别下的快照读会退化成当前读；之所以出现快照读的情况，是基于提高并发性能的考虑，快照读的实现是基于多版本并发控制，即MVCC,可以认为MVCC是行锁的一个变种，但它在很多情况下，避免了加锁操作，降低了开销；既然是基于多版本，即快照读可能读到的并不一定是数据的最新版本，而有可能是之前的历史版本</p>
+<p>MVCC就是为了实现读-写冲突不加锁，而这个读指的就是<code>快照读</code>, 而非当前读，当前读实际上是一种加锁的操作，是悲观锁的实现</p>
+</li>
+</ul>
+<h2 id="Read-View"><a href="#Read-View" class="headerlink" title="Read View"></a>Read View</h2><p><strong>Read View是什么呢？</strong> </p>
+<p>它就是事务执行SQL语句时，产生的读视图。实际上在innodb中，每个SQL语句执行前都会得到一个Read View。</p>
+<p><strong>Read View有什么用呢？</strong> </p>
+<p>它主要是用来做可见性判断的，即判断当前事务可见哪个版本的数据~</p>
+<p><strong>Read View拥有如下数据结构</strong></p>
+<ul>
+<li>m_ids:当前系统中那些活跃(未提交)的读写事务ID, 它数据结构为一个List。</li>
+<li>min_limit_id:表示在生成Read View时，当前系统中活跃的读写事务中最小的事务id，即m_ids中的最小值。</li>
+<li>max_limit_id:表示生成Read View时，系统中应该分配给下一个事务的id值。</li>
+<li>creator_trx_id: 创建当前Read View的事务ID</li>
+</ul>
+<p><img src="/../img/mvcc/readview.png" srcset="/img/loading.gif" lazyload alt="ReadView"></p>
+<h2 id="版本链访问规则"><a href="#版本链访问规则" class="headerlink" title="版本链访问规则"></a>版本链访问规则</h2><ul>
+<li>判断当前事务id等于creator_trx_id吗？成立说明数据就是自己这个事务更改的，可以访问</li>
+<li>判断trx id&lt;min_trx_id？成立说明数据已经提交了，可以访问</li>
+<li>判断trx id&gt;max_trx_id？成立说明该事务是在ReadView:生成以后才开启，不允许访问</li>
+<li>判断min_trx_id&lt;&#x3D;trx_id&lt;&#x3D;max_trx_id, 成立在mids数据中对比，不存数据在的则代表数据是已提交的，可以访问。</li>
+</ul>
+<p>总结</p>
+<p>1.自己的事务更改的可以读</p>
+<p>2.已经提交的可以读</p>
+<p>3.没有提交的不能读</p>
+<p>Read View生成后会在undo log版本链中由新到旧按顺序寻找，对找到的第一个匹配的记录进行读取。</p>
+<h2 id="在RC（Read-Commit）隔离级别下的Read-View生成"><a href="#在RC（Read-Commit）隔离级别下的Read-View生成" class="headerlink" title="在RC（Read Commit）隔离级别下的Read View生成"></a>在RC（Read Commit）隔离级别下的Read View生成</h2><p><img src="/../img/mvcc/rc-readview.png" srcset="/img/loading.gif" lazyload alt="RCReadView"></p>
+<p>在RC隔离级别下每次对数据的读取都会创建一个Read View</p>
+<h3 id="在第一个Read-View生成时"><a href="#在第一个Read-View生成时" class="headerlink" title="在第一个Read View生成时"></a>在第一个Read View生成时</h3><p>事务A已提交，事务B，C，D未提交，所以mids为他们的对应的id {2,3,4}</p>
+<p>最小活跃事务id min_trx_id 为 2</p>
+<p>预分配事务id 为最大活跃事务id:4  +1  所以 max_trx_id 为 5</p>
+<p>创建事务的id creator_trx_id 为 4</p>
+<p><img src="/../img/mvcc/rc-readview-example-1.png" srcset="/img/loading.gif" lazyload alt="RCReadViewExample01"></p>
+<p>根据上面版本链访问规则</p>
+<p>trx_id&#x3D;3的记录 其对应的事务未提交，不能读，找下一个。</p>
+<p>trx_id&#x3D;2的记录 其对应的事务未提交，不能读，找下一个。</p>
+<p>trx_id&#x3D;1的记录 其对应的事务已提交，可以读。</p>
+<h3 id="在第二个Read-View生成时"><a href="#在第二个Read-View生成时" class="headerlink" title="在第二个Read View生成时"></a>在第二个Read View生成时</h3><p>事务A，B已提交，事务C，D未提交，所以mids为他们的对应的id {3,4}</p>
+<p>最小活跃事务id min_trx_id 为 3</p>
+<p>预分配事务id 为最大活跃事务id:4  +1  所以 max_trx_id 为 5</p>
+<p>创建事务的id creator_trx_id 为 4</p>
+<p><img src="/../img/mvcc/rc-readview-example-2.png" srcset="/img/loading.gif" lazyload alt="RCReadViewExample01"></p>
+<p>根据上面版本链访问规则</p>
+<p>trx_id&#x3D;3的记录 其对应的事务未提交，不能读，找下一个。</p>
+<p>trx_id&#x3D;2的记录 其对应的事务已提交，可以读。</p>
+<p>同时由此可见RC隔离级别下，不能解决幻读问题</p>
+<h2 id="在RR（Repeatable-Read）隔离级别下的Read-View生成"><a href="#在RR（Repeatable-Read）隔离级别下的Read-View生成" class="headerlink" title="在RR（Repeatable Read）隔离级别下的Read View生成"></a>在RR（Repeatable Read）隔离级别下的Read View生成</h2><p>在RR隔离级别下，Read View只在第一次快照读生成，后续<strong>快照读</strong>复用</p>
+<p><img src="/../img/mvcc/rr-readview.png" srcset="/img/loading.gif" lazyload alt="RRReadView"></p>
+<p>向上面分析的一样，第一次快照读可以读取到trx_id为1的数据，之后复用此Read View 依然是读取到trx_id为1的数据。</p>
+<p>但是RR隔离级别下MVCC能完全避免幻读吗？</p>
+<p><strong>不完全能</strong></p>
+<h3 id="RR隔离级别下的幻读"><a href="#RR隔离级别下的幻读" class="headerlink" title="RR隔离级别下的幻读"></a>RR隔离级别下的幻读</h3><p>上文中我们提到了当前读与快照读，在RR隔离级别下，当前读<strong>不会复用第一次快照读产生的Read View</strong>，<strong>而是重新生成Read View</strong>。</p>
+<p>所以，当两次快照读之间有当前读时，就有可能产生幻读。因为第二次快照读不回复用第一次快照读产生的Read View，而是使用当前读新生成的Read View。</p>
+<p><img src="/../img/mvcc/rr-readview-example.png" srcset="/img/loading.gif" lazyload alt="RRReadViewExample"></p>
+<p>我们可以看到，在执行update语句后，事务B重新生成Read View，在次执行select语句就出现了幻读问题。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/MySQL/" class="category-chain-item">MySQL</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/note/">#note</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MySql中的MVCC（多版本并发控制）</div>
+      <!-- <div>http://example.com/2023/09/09/mvcc/</div> -->
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>鸭粥</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/25/thread-start0/" title="Java中线程是如何启动的">
+                        <span class="hidden-mobile">Java中线程是如何启动的</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

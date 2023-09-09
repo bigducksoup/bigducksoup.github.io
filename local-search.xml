@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>MySql中的MVCC（多版本并发控制）</title>
+    <link href="/2023/09/09/mvcc/"/>
+    <url>/2023/09/09/mvcc/</url>
+    
+    <content type="html"><![CDATA[<h1 id="MVCC-多版本并发控制"><a href="#MVCC-多版本并发控制" class="headerlink" title="MVCC 多版本并发控制"></a>MVCC 多版本并发控制</h1><p><code>MVCC</code>，全称<code>Multi-Version Concurrency Control</code>，即多版本并发控制。MVCC是一种并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问，在编程语言中实现事务内存。</p><p>MVCC在MySQL InnoDB中的实现主要是为了提高数据库并发性能，用更好的方式去处理读-写冲突，做到即使有读写冲突时，也能做到不加锁，非阻塞并发读</p><p>MySQL中的MVCC基于undo log版本链，和Read View实现。</p><h2 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h2><p><strong>什么是undo log？</strong></p><p>撤销日志，在数据库事务开始之前，MYSQL会去记录更新前的数据到undo log文件中。如果事务回滚或者数据库崩溃时，可以利用undo log日志中记录的日志信息进行回退。同时也可以提供多版本并发控制下的读(MVCC)。</p><p><strong>undo log的生命周期</strong></p><p>undo log产生： 在事务开始之前生成<br>undo log销毁： 当事务提交之后，undo log并不能立马被删除，而是放入待清理的链表，由purge线程判断是否由其他事务在使用undo段中表的上一个事务之前的版本信息，决定是否可以清理undo log的日志空间。<br>注意： undo log也会生产redo log，undo log也要实现持久性保护。</p><h2 id="undo-log版本链"><a href="#undo-log版本链" class="headerlink" title="undo log版本链"></a>undo log版本链</h2><p>多个事务并行操作某一行数据时，不同事务对该行数据的修改会产生多个版本，然后通过回滚指针（roll_pointer），连成一个链表，这个链表就称为<strong>版本链</strong>。</p><p><img src="/../img/mvcc/undolog-chain.png" alt="undolog-chain"></p><p>我们可以看到版本链中的每条记录有<strong>TRX_ID</strong>，和<strong>DB_ROLL_PTR</strong>两个重要的字段</p><p>其中 <strong>TRX_ID</strong> 代表着当前记录的事务ID。<strong>DB_ROLL_PTR</strong>指向了上一条undo log</p><p>每当一个事务修改了一条记录时，都会产生一条关于这个记录的undo log，并插入undo log版本链中，记录当前事务ID，并指向此条记录的上一条undolog</p><h2 id="当前读和快照读"><a href="#当前读和快照读" class="headerlink" title="当前读和快照读"></a>当前读和快照读</h2><p>什么是MySQL InnoDB下的当前读和快照读?</p><ul><li><p>当前读<br>像select lock in share mode(<code>共享锁</code>), select for update ; update, insert ,delete(<code>排他锁</code>)这些操作都是一种当前读，为什么叫当前读？就是它读取的是记录的最新版本，读取时还要保证其他并发事务不能修改当前记录，会对读取的记录进行加锁</p></li><li><p>快照读<br>像<code>不加锁</code>的select操作就是快照读，即不加锁的非阻塞读；快照读的前提是隔离级别不是串行级别，串行级别下的快照读会退化成当前读；之所以出现快照读的情况，是基于提高并发性能的考虑，快照读的实现是基于多版本并发控制，即MVCC,可以认为MVCC是行锁的一个变种，但它在很多情况下，避免了加锁操作，降低了开销；既然是基于多版本，即快照读可能读到的并不一定是数据的最新版本，而有可能是之前的历史版本</p><p>MVCC就是为了实现读-写冲突不加锁，而这个读指的就是<code>快照读</code>, 而非当前读，当前读实际上是一种加锁的操作，是悲观锁的实现</p></li></ul><h2 id="Read-View"><a href="#Read-View" class="headerlink" title="Read View"></a>Read View</h2><p><strong>Read View是什么呢？</strong> </p><p>它就是事务执行SQL语句时，产生的读视图。实际上在innodb中，每个SQL语句执行前都会得到一个Read View。</p><p><strong>Read View有什么用呢？</strong> </p><p>它主要是用来做可见性判断的，即判断当前事务可见哪个版本的数据~</p><p><strong>Read View拥有如下数据结构</strong></p><ul><li>m_ids:当前系统中那些活跃(未提交)的读写事务ID, 它数据结构为一个List。</li><li>min_limit_id:表示在生成Read View时，当前系统中活跃的读写事务中最小的事务id，即m_ids中的最小值。</li><li>max_limit_id:表示生成Read View时，系统中应该分配给下一个事务的id值。</li><li>creator_trx_id: 创建当前Read View的事务ID</li></ul><p><img src="/../img/mvcc/readview.png" alt="ReadView"></p><h2 id="版本链访问规则"><a href="#版本链访问规则" class="headerlink" title="版本链访问规则"></a>版本链访问规则</h2><ul><li>判断当前事务id等于creator_trx_id吗？成立说明数据就是自己这个事务更改的，可以访问</li><li>判断trx id&lt;min_trx_id？成立说明数据已经提交了，可以访问</li><li>判断trx id&gt;max_trx_id？成立说明该事务是在ReadView:生成以后才开启，不允许访问</li><li>判断min_trx_id&lt;&#x3D;trx_id&lt;&#x3D;max_trx_id, 成立在mids数据中对比，不存数据在的则代表数据是已提交的，可以访问。</li></ul><p>总结</p><p>1.自己的事务更改的可以读</p><p>2.已经提交的可以读</p><p>3.没有提交的不能读</p><p>Read View生成后会在undo log版本链中由新到旧按顺序寻找，对找到的第一个匹配的记录进行读取。</p><h2 id="在RC（Read-Commit）隔离级别下的Read-View生成"><a href="#在RC（Read-Commit）隔离级别下的Read-View生成" class="headerlink" title="在RC（Read Commit）隔离级别下的Read View生成"></a>在RC（Read Commit）隔离级别下的Read View生成</h2><p><img src="/../img/mvcc/rc-readview.png" alt="RCReadView"></p><p>在RC隔离级别下每次对数据的读取都会创建一个Read View</p><h3 id="在第一个Read-View生成时"><a href="#在第一个Read-View生成时" class="headerlink" title="在第一个Read View生成时"></a>在第一个Read View生成时</h3><p>事务A已提交，事务B，C，D未提交，所以mids为他们的对应的id {2,3,4}</p><p>最小活跃事务id min_trx_id 为 2</p><p>预分配事务id 为最大活跃事务id:4  +1  所以 max_trx_id 为 5</p><p>创建事务的id creator_trx_id 为 4</p><p><img src="/../img/mvcc/rc-readview-example-1.png" alt="RCReadViewExample01"></p><p>根据上面版本链访问规则</p><p>trx_id&#x3D;3的记录 其对应的事务未提交，不能读，找下一个。</p><p>trx_id&#x3D;2的记录 其对应的事务未提交，不能读，找下一个。</p><p>trx_id&#x3D;1的记录 其对应的事务已提交，可以读。</p><h3 id="在第二个Read-View生成时"><a href="#在第二个Read-View生成时" class="headerlink" title="在第二个Read View生成时"></a>在第二个Read View生成时</h3><p>事务A，B已提交，事务C，D未提交，所以mids为他们的对应的id {3,4}</p><p>最小活跃事务id min_trx_id 为 3</p><p>预分配事务id 为最大活跃事务id:4  +1  所以 max_trx_id 为 5</p><p>创建事务的id creator_trx_id 为 4</p><p><img src="/../img/mvcc/rc-readview-example-2.png" alt="RCReadViewExample01"></p><p>根据上面版本链访问规则</p><p>trx_id&#x3D;3的记录 其对应的事务未提交，不能读，找下一个。</p><p>trx_id&#x3D;2的记录 其对应的事务已提交，可以读。</p><p>同时由此可见RC隔离级别下，不能解决幻读问题</p><h2 id="在RR（Repeatable-Read）隔离级别下的Read-View生成"><a href="#在RR（Repeatable-Read）隔离级别下的Read-View生成" class="headerlink" title="在RR（Repeatable Read）隔离级别下的Read View生成"></a>在RR（Repeatable Read）隔离级别下的Read View生成</h2><p>在RR隔离级别下，Read View只在第一次快照读生成，后续<strong>快照读</strong>复用</p><p><img src="/../img/mvcc/rr-readview.png" alt="RRReadView"></p><p>向上面分析的一样，第一次快照读可以读取到trx_id为1的数据，之后复用此Read View 依然是读取到trx_id为1的数据。</p><p>但是RR隔离级别下MVCC能完全避免幻读吗？</p><p><strong>不完全能</strong></p><h3 id="RR隔离级别下的幻读"><a href="#RR隔离级别下的幻读" class="headerlink" title="RR隔离级别下的幻读"></a>RR隔离级别下的幻读</h3><p>上文中我们提到了当前读与快照读，在RR隔离级别下，当前读<strong>不会复用第一次快照读产生的Read View</strong>，<strong>而是重新生成Read View</strong>。</p><p>所以，当两次快照读之间有当前读时，就有可能产生幻读。因为第二次快照读不回复用第一次快照读产生的Read View，而是使用当前读新生成的Read View。</p><p><img src="/../img/mvcc/rr-readview-example.png" alt="RRReadViewExample"></p><p>我们可以看到，在执行update语句后，事务B重新生成Read View，在次执行select语句就出现了幻读问题。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>MySQL</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>note</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Java中线程是如何启动的</title>
     <link href="/2023/08/25/thread-start0/"/>
     <url>/2023/08/25/thread-start0/</url>

@@ -1,0 +1,803 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.JPG">
+  <link rel="icon" href="/img/avatar.JPG">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="鸭粥">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="直播服务架构设计设计直播服务架构时，有几个关键方面需要考虑，包括视频流处理、实时通信、负载均衡和可扩展性。 1.需求分析 直播服务需要一种可以实时传输视频流的协议，主播端向服务器发送视频流，观众端从服务器拉取流进行播放。  向服务器的推流需要支持权限验证，检查推流方的身份。  管理员支持对直播的强制结束，对房间的封禁。  服务器支持扩展，并且根据服务器的不同配置，需要选择合适的负载均衡策略。  直">
+<meta property="og:type" content="article">
+<meta property="og:title" content="直播服务架构设计">
+<meta property="og:url" content="http://example.com/2023/09/17/live-server/index.html">
+<meta property="og:site_name" content="鸭粥的Blog">
+<meta property="og:description" content="直播服务架构设计设计直播服务架构时，有几个关键方面需要考虑，包括视频流处理、实时通信、负载均衡和可扩展性。 1.需求分析 直播服务需要一种可以实时传输视频流的协议，主播端向服务器发送视频流，观众端从服务器拉取流进行播放。  向服务器的推流需要支持权限验证，检查推流方的身份。  管理员支持对直播的强制结束，对房间的封禁。  服务器支持扩展，并且根据服务器的不同配置，需要选择合适的负载均衡策略。  直">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/live-server/simple.png">
+<meta property="og:image" content="http://example.com/img/live-server/on_publish.png">
+<meta property="og:image" content="http://example.com/img/live-server/get-push-url.png">
+<meta property="og:image" content="http://example.com/img/live-server/kick.png">
+<meta property="og:image" content="http://example.com/img/live-server/re-push.png">
+<meta property="og:image" content="http://example.com/img/live-server/push-structure.png">
+<meta property="article:published_time" content="2023-09-17T03:08:46.000Z">
+<meta property="article:modified_time" content="2023-09-17T08:58:14.569Z">
+<meta property="article:author" content="鸭粥">
+<meta property="article:tag" content="design">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/live-server/simple.png">
+  
+  
+  
+  <title>直播服务架构设计 - 鸭粥的Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>鸭粥的Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/avatar.JPG') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="直播服务架构设计"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-17 11:08" pubdate>
+          2023年9月17日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          48 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">直播服务架构设计</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="直播服务架构设计"><a href="#直播服务架构设计" class="headerlink" title="直播服务架构设计"></a>直播服务架构设计</h1><p>设计直播服务架构时，有几个关键方面需要考虑，包括视频流处理、实时通信、负载均衡和可扩展性。</p>
+<h2 id="1-需求分析"><a href="#1-需求分析" class="headerlink" title="1.需求分析"></a>1.需求分析</h2><ol>
+<li><p>直播服务需要一种可以实时传输视频流的协议，主播端向服务器发送视频流，观众端从服务器拉取流进行播放。</p>
+</li>
+<li><p>向服务器的推流需要支持权限验证，检查推流方的身份。</p>
+</li>
+<li><p>管理员支持对直播的强制结束，对房间的封禁。</p>
+</li>
+<li><p>服务器支持扩展，并且根据服务器的不同配置，需要选择合适的负载均衡策略。</p>
+</li>
+<li><p>直播服务器处于拉流多推流少的状态，需要支持拉流与推流的分离。</p>
+</li>
+<li><p>直播支持多种清晰度的选择，以适应观众端的网络情况。</p>
+</li>
+<li><p>（可选）对直播的回放进行保存。</p>
+</li>
+<li><p>集成消息服务，包括但不限于：用户弹幕，礼物消息，房间进入与退出，直播状态。</p>
+</li>
+<li><p>直播数据与信息统计，包括但不限于：直播人数统计，点赞数，房间基本信息</p>
+</li>
+</ol>
+<h2 id="2-技术选型"><a href="#2-技术选型" class="headerlink" title="2.技术选型"></a>2.技术选型</h2><h4 id="RTMP协议"><a href="#RTMP协议" class="headerlink" title="RTMP协议"></a>RTMP协议</h4><p>RTMP（Real Time Messaging Protocol） 是由 Adobe 公司基于 Flash Player 播放器对应的音视频 flv 封装格式提出的一种，基于TCP 的数据传输协议。本身具有稳定、兼容性强、高穿透的特点。常被应用于流媒体直播、点播等场景。常用于推推流方（主播）的稳定传输需求。</p>
+<h4 id="nginx-rtmp-module"><a href="#nginx-rtmp-module" class="headerlink" title="nginx-rtmp-module"></a>nginx-rtmp-module</h4><p>一款强大的NGINX 的流媒体插件，拥有诸多强大的功能</p>
+<h5 id="Features"><a href="#Features" class="headerlink" title="Features"></a>Features</h5><ul>
+<li>RTMP&#x2F;HLS&#x2F;MPEG-DASH live streaming          常见协议直播</li>
+<li>RTMP Video on demand FLV&#x2F;MP4, playing from local filesystem or HTTP    RTMP视频点播FLV&#x2F;MP4</li>
+<li>Stream relay support for distributed streaming: push &amp; pull models  </li>
+<li>Recording streams in multiple FLVs                直播流记录</li>
+<li>H264&#x2F;AAC support                                             支持H.264&#x2F;ACC 视频音频编码</li>
+<li>Online transcoding with FFmpeg                     支持调用FFmpeg在线转码</li>
+<li>HTTP callbacks (publish&#x2F;play&#x2F;record&#x2F;update etc)            多种回调</li>
+<li>Running external programs on certain events (exec)      支持exec调用其他命令</li>
+<li>HTTP control module for recording audio&#x2F;video and dropping clients       基于http的直播权限控制</li>
+<li>Advanced buffering techniques to keep memory allocations at a minimum level for faster streaming and low memory footprint              buffer优化</li>
+<li>Proved to work with Wirecast, FMS, Wowza, JWPlayer, FlowPlayer, StrobeMediaPlayback, ffmpeg, avconv, rtmpdump, flvstreamer and many more        </li>
+<li>Statistics in XML&#x2F;XSL in machine- &amp; human- readable form</li>
+<li>Linux&#x2F;FreeBSD&#x2F;MacOS&#x2F;Windows     多平台支持</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://bigducksoup.github.io/2023/08/11/nginx-rtmp-module/">https://bigducksoup.github.io/2023/08/11/nginx-rtmp-module/</a></p>
+<h4 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h4><ul>
+<li><code>WebSocket</code> 是一种<code>支持双向通讯</code>网络通信协议。</li>
+<li>意思就是服务器可以<code>主动向客户端推送信息</code>，客户端也可以<code>主动向服务器发送信息</code></li>
+<li>属于服务器推送技术的一种.</li>
+</ul>
+<h5 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h5><p>（1）建立在<code> TCP 协议</code>之上，服务器端的实现比较容易。</p>
+<p>（2）与 <code>HTTP 协议</code>有着良好的兼容性。默认端口也是80和443，并且<code>握手阶段</code>采用 HTTP 协议，因此握手时不容易屏蔽，<code>能通过各种 HTTP 代理服务器</code>。</p>
+<p>（3）数据格式比较轻量，性能开销小，通信高效。</p>
+<p>（4）可以发送<code>文本</code>，也可以发送<code>二进制数据</code>（<code>blob</code>对象或<code>Arraybuffer</code>对象）</p>
+<p>（5）收到的数据类型 可以使用binaryType 指定， 显式指定收到的二进制数据类型</p>
+<p>（6）没有<code>同源限制</code>，客户端可以与任意服务器通信。</p>
+<p>（7）协议标识符是<code>ws（握手http）</code>（如果加密，则为<code>wss（tcp +TLS)</code>），服务器网址就是 URL。</p>
+<h4 id="RabbitMQ（消息队列）"><a href="#RabbitMQ（消息队列）" class="headerlink" title="RabbitMQ（消息队列）"></a>RabbitMQ（消息队列）</h4><p>RabbitMQ是一个开源的消息代理和队列服务器，用来通过普通协议在不同的应用之间共享数据(跨平台跨语言)。RabbitMQ是使用Erlang语言编写，并且基于AMQP协议实现。</p>
+<h2 id="3-架构设计"><a href="#3-架构设计" class="headerlink" title="3.架构设计"></a>3.架构设计</h2><h4 id="1-基本需求"><a href="#1-基本需求" class="headerlink" title="1.基本需求"></a>1.基本需求</h4><p>直播功能的核心是<strong>向服务器推送视频流</strong>和<strong>从服务器拉取视频流播放</strong> </p>
+<p>通过Nginx-rtmp-module我们可以轻松实现这一功能</p>
+<p><img src="/../img/live-server/simple.png" srcset="/img/loading.gif" lazyload alt="简单示例"></p>
+<h4 id="2-推流权限控制"><a href="#2-推流权限控制" class="headerlink" title="2.推流权限控制"></a>2.推流权限控制</h4><p>我们需要对 <strong>向nginx推流的请求</strong> 进行权限管理与身份的认证，以保证直播服务器不受恶意攻击。</p>
+<p>对此，我们可以通过配置on_publish {url} 让请求必须通过nginx回调 {url} 且 {url}  **返回HTTP.OK(200)**时，才能进行推流。</p>
+<p>对于这个问题以及之后的需求我们使用SpringBoot构建自己的直播服务模块。</p>
+<p>其中on_publish自带的参数有：</p>
+<ul>
+<li>call&#x3D;play</li>
+<li>addr - client IP address</li>
+<li>clientid - nginx client id (displayed in log and stat)</li>
+<li>app - application name</li>
+<li>flashVer - client flash version</li>
+<li>swfUrl - client swf url</li>
+<li>tcUrl - tcUrl</li>
+<li>pageUrl - client page url</li>
+<li>name - stream name</li>
+</ul>
+<p>我们也可以在url中设置自定义参数，例如：rtmp:&#x2F;&#x2F;localhost&#x2F;app&#x2F;movie?a&#x3D;100&amp;b&#x3D;face&amp;foo&#x3D;bar</p>
+<p><img src="/../img/live-server/on_publish.png" srcset="/img/loading.gif" lazyload alt="on_publish"></p>
+<p>此时我们注意到一些问题</p>
+<ol>
+<li>我们如何获取推流的地址，以及地址上我们应该携带什么参数</li>
+<li>服务器如何验证我们的身份</li>
+</ol>
+<p>对于这两个问题，本质上是因为我们当前没有对推流方赋予一个身份，所以我们需要一套用户认证系统来进行推流方的身份验证。</p>
+<p>同时当推流方拥有身份后，我们可以通过身份获取推流地址，并在服务端保存必要的信息，这样我们在回调on_publish时就可以通过传来的参数验证身份。</p>
+<p>（因此架构为我的个人视频APP项目设计，所以在此处我已经拥有了一个用户认证服务）</p>
+<p><img src="/../img/live-server/get-push-url.png" srcset="/img/loading.gif" lazyload alt="get-push-url"></p>
+<p>当然，我们对直播房间的一些信息与状态，也可以在on_publish内进行操作</p>
+<h4 id="3-直播控制"><a href="#3-直播控制" class="headerlink" title="3.直播控制"></a>3.直播控制</h4><p>在上面推流的过程中，on_publish中携带了许多的默认参数，这些参数可以让我们对推流进行精准的控制</p>
+<p>首先我们在nginx配置中配置rtmp_control all;</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs abnf">http &#123;<br>...<br>    server &#123;<br>        listen       <span class="hljs-number">8080</span><span class="hljs-comment">;</span><br>        server_name  localhost<span class="hljs-comment">;</span><br>        ....<br>        location /control &#123;<br>            rtmp_control all<span class="hljs-comment">;</span><br>        &#125;<br>     &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h5 id="录制"><a href="#录制" class="headerlink" title="录制"></a>录制</h5><p><code>http://server.com/control/record/start|stop?srv=SRV&amp;app=APP&amp;name=NAME&amp;rec=REC</code></p>
+<ul>
+<li>srv&#x3D;SRV - optional server{} block number within rtmp{} block, default to first server{} block  </li>
+<li>app&#x3D;APP - required application name</li>
+<li>name&#x3D;NAME - required stream name</li>
+<li>rec&#x3D;REC - optional recorder name, defaults to root (unnamed) recorder</li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">rtmp</span> &#123;<br>    <span class="hljs-section">server</span> &#123;<br>        <span class="hljs-attribute">listen</span> <span class="hljs-number">1935</span>;<br>        <span class="hljs-attribute">application</span> myapp &#123;<br>            <span class="hljs-attribute">live</span> <span class="hljs-literal">on</span>;<br>            <span class="hljs-attribute">recorder</span> rec1 &#123;<br>               <span class="hljs-attribute">record</span> all manual;<br>               <span class="hljs-attribute">record_suffix</span> all.flv;<br>               <span class="hljs-attribute">record_path</span> /tmp/rec;<br>               <span class="hljs-attribute">record_unique</span> <span class="hljs-literal">on</span>;<br>           &#125;<br>       &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>推流</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">ffmpeg -i http:<span class="hljs-regexp">//</span>someserver.com<span class="hljs-regexp">/mychannel.ts -c:v copy -c:a nellymoser -ar 44100 -ac 1 -f flv rtmp:/</span><span class="hljs-regexp">/localhost/my</span>app/mystream<br></code></pre></td></tr></table></figure>
+
+<p>开始与结束录制</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-built_in">curl</span> <span class="hljs-string">&quot;http://localhost:8080/control/record/start?app=myapp&amp;name=mystream&amp;rec=rec1&quot;</span><br><span class="hljs-built_in">curl</span> <span class="hljs-string">&quot;http://localhost:8080/control/record/stop?app=myapp&amp;name=mystream&amp;rec=rec1&quot;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h5 id="强制断开-drop"><a href="#强制断开-drop" class="headerlink" title="强制断开(drop)"></a>强制断开(drop)</h5><p><code>http://server.com/control/drop/publisher|subscriber|client? srv=SRV&amp;app=APP&amp;name=NAME&amp;addr=ADDR&amp;clientid=CLIENTID</code></p>
+<ul>
+<li>srv, app, name - the same as above. </li>
+<li>addr - optional client address (the same as returned by rtmp_stat)</li>
+<li>clientid - optional nginx client id (displayed in log and stat)</li>
+</ul>
+<p>The first method <code>drop/publisher</code> drops publisher connection. The second <code>drop/client</code> drops every connection matching <code>addr</code> argument or all clients (including publisher) if <code>addr</code> is not specified.</p>
+<p>drop&#x2F;publisher会让nginx断开与后面参数对应的推流方的连接</p>
+<p>drop&#x2F;client会让匹配addr参数的所以连接关闭（包括推流与拉流的所有客户端）</p>
+<h5 id="以超管关闭直播为例"><a href="#以超管关闭直播为例" class="headerlink" title="以超管关闭直播为例"></a>以超管关闭直播为例</h5><p><img src="/../img/live-server/kick.png" srcset="/img/loading.gif" lazyload alt="kick publisher"></p>
+<h4 id="4-不同清晰度"><a href="#4-不同清晰度" class="headerlink" title="4.不同清晰度"></a>4.不同清晰度</h4><p>在nginx-rtmp-module中我们可以通过exec调用指令，在系统安装了FFmpeg的情况下，可以通过调用FFmpeg生成不同清晰度的流并push到其他地址</p>
+<h5 id="exec-push-exec"><a href="#exec-push-exec" class="headerlink" title="exec_push(exec)"></a>exec_push(exec)</h5><p>Syntax: <code>exec_push command arg*</code><br>Context: rtmp, server, application</p>
+<p>Specifies external command with arguments to be executed on every stream published. When publishing stops the process is terminated. Full path to binary should be specified as the first argument. There are no assumptions about what this process should do. However this feature is useful with ffmpeg for stream transcoding. FFmpeg is supposed to connect to nginx-rtmp as a client and output transcoded stream back to nginx-rtmp as publisher. Substitutions of form &#x2F;{var} can be used within command line:</p>
+<ul>
+<li>$name - stream name</li>
+<li>$app - application name</li>
+<li>$addr - client address</li>
+<li>$flashver - client flash version</li>
+<li>$swfurl - client swf url</li>
+<li>$tcurl - client tc url</li>
+<li>$pageurl - client page url</li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">rtmp</span> &#123;<br>    <span class="hljs-section">server</span> &#123;<br>            <span class="hljs-attribute">listen</span> <span class="hljs-number">1935</span>;<br>            <span class="hljs-attribute">chunk_size</span> <span class="hljs-number">4096</span>;<br><br>            <span class="hljs-attribute">application</span> live &#123;<br>                    <span class="hljs-attribute">live</span> <span class="hljs-literal">on</span>;<br>                    <span class="hljs-attribute">record</span> <span class="hljs-literal">off</span>;<br>       　　　　　　　　<span class="hljs-attribute">exec</span> ffmpeg -i rtmp://localhost/live/<span class="hljs-variable">$name</span> -threads <span class="hljs-number">1</span> -c:v libx264 -profile:v baseline -b:v <span class="hljs-number">350K</span> -s 640x360 -f flv -c:a aac -ac <span class="hljs-number">1</span> -strict -<span class="hljs-number">2</span> -b:a <span class="hljs-number">56k</span> rtmp://localhost/live360p/<span class="hljs-variable">$name</span>;<br>            &#125;<br>            <span class="hljs-attribute">application</span> live360p &#123;<br>                    <span class="hljs-attribute">live</span> <span class="hljs-literal">on</span>;<br>                    <span class="hljs-attribute">record</span> <span class="hljs-literal">off</span>;<br>                    <span class="hljs-attribute">allow</span> publish <span class="hljs-number">127.0.0.1</span>;<br>                    <span class="hljs-attribute">allow</span> publish <span class="hljs-number">0.0.0.0</span>;<br>                    <span class="hljs-attribute">deny</span> publish all;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>以上面的配置为例，这样观众端就需要从新的地址拉流，而不是和推流地址相同，我们可以将转换分辨率后的推流地址设置为其他服务器的地址，并且其他服务器也可以配置**push {url}**在向其他服务器推流。</p>
+<p>这样我们就可以实现推拉流的分离，观众播放时，为其选择返回对应地址即可。</p>
+<p>而且push命令可以二次推流，这样我们可以为服务器设置不同数量的push，这样我们就可以根据直播间人气的大小，让流传播不同次数，人气越大，我们可以选择传播数多的服务器，支撑观众数量带来的压力。</p>
+<p><img src="/../img/live-server/re-push.png" srcset="/img/loading.gif" lazyload alt="re-push"></p>
+<h4 id="5-推流架构"><a href="#5-推流架构" class="headerlink" title="5.推流架构"></a>5.推流架构</h4><p>经过了上一部分的分析后，我们就明确了一个推拉分离的高可用架构</p>
+<p>我们将其与之前的权限验证与控制部分相结合,设计我们的推流架构</p>
+<p><img src="/../img/live-server/push-structure.png" srcset="/img/loading.gif" lazyload alt="推流架构"></p>
+<h4 id="6-播放流程"><a href="#6-播放流程" class="headerlink" title="6.播放流程"></a>6.播放流程</h4><p>未完待续。。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/architecture/" class="category-chain-item">architecture</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/design/">#design</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>直播服务架构设计</div>
+      <!-- <div>http://example.com/2023/09/17/live-server/</div> -->
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>鸭粥</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月17日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09/09/mvcc/" title="MySql中的MVCC（多版本并发控制）">
+                        <span class="hidden-mobile">MySql中的MVCC（多版本并发控制）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

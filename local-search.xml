@@ -4,6 +4,44 @@
   
   
   <entry>
+    <title>高性能网络模式-Reactor</title>
+    <link href="/2023/10/13/reactor/"/>
+    <url>/2023/10/13/reactor/</url>
+    
+    <content type="html"><![CDATA[<h1 id="Reactor-模式详解"><a href="#Reactor-模式详解" class="headerlink" title="Reactor 模式详解"></a>Reactor 模式详解</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文章知识需要对BIO，NIO，AIO，以及IO多路复用（select，poll，epoll，kqueue）等技术有一定的了解与认识。</p><h2 id="什么是Reactor"><a href="#什么是Reactor" class="headerlink" title="什么是Reactor"></a>什么是Reactor</h2><p>Reactor 模式又叫反应堆模式，是一种常见的高性能的服务器开发模式，它是基于事件驱动的，并且使用了IO多路复用技术。</p><p>Reactor 模式的核心思想是将并发性与异步事件处理相结合，通过事件驱动的方式处理输入和输出，以提供高效的事件分发和处理能力。它广泛应用于构建网络服务器、消息传递系统和其他需要处理大量并发请求的应用程序。</p><h2 id="深入理解Reactor"><a href="#深入理解Reactor" class="headerlink" title="深入理解Reactor"></a>深入理解Reactor</h2><p><strong>Reactor 模式</strong>分为 <strong>reactor</strong>和<strong>处理资源池</strong>组成，reactor 只负责监听以及分发事件，它将事件分发给处理资源池进行处理。</p><p><strong>Reactor模式</strong>中有以下三种角色：</p><ul><li><strong>Reactor</strong> 将I&#x2F;O事件分派给对应的Handler</li><li><strong>Acceptor</strong> 处理客户端新连接，并分派请求到处理器链中</li><li><strong>Handlers</strong> 执行非阻塞读&#x2F;写 任务</li></ul><h3 id="基于事件驱动"><a href="#基于事件驱动" class="headerlink" title="基于事件驱动"></a><strong>基于事件驱动</strong></h3><p><strong>reactor</strong> 对事件进行反应，它通过IO多路复用监听事件，收到事件后，根据事件的类型分配给<strong>处理资源池</strong>处理。</p><p><strong>reactor</strong>接收到的事件包括连接事件，读写事件。这两种事件分别被分配给<strong>Acceptor</strong>和<strong>Handler</strong>处理。</p><p>我们以<strong>单reactor单线程</strong>为例</p><p><img src="/../img/reactor/single-reactor-single-thread.png" alt="单reactor单线程"></p><p>上图既展现了reactor模式的基本思想。</p><p>reactor 通过IO多路复用监听事件，并根据事件类型通过dispatch进行分发。</p><p>对于连接建立事件，acceptor会使用accept方法接受连接，并创建hanlder对象，处理后续事件。</p><p>对于读写事件，交给连接对应的handler进行处理。</p><p>单 Reactor 单进程的方案<strong>不适用计算机密集型的场景，只适用于业务处理非常快速的场景</strong>。</p><p>在Redis 6.0版本之前，正是使用的单reactor单进程 Reactor模式。</p><h3 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h3><p>单reactor单线程方案存在 2 个缺点：</p><ul><li>第一个缺点，因为只有一个线程，<strong>无法充分利用 多核 CPU 的性能</strong>；</li><li>第二个缺点，Handler 对象在业务处理时，整个进程是无法处理其他连接的事件的，<strong>如果业务处理耗时比较长，那么就造成响应的延迟</strong>；</li></ul><p>所以Reactor还有多线程实现方式。</p><ul><li>单 reactor 多线程 &#x2F; 进程；</li><li>多 reactor 多进程 &#x2F; 线程；</li></ul><h4 id="单-reactor-多线程"><a href="#单-reactor-多线程" class="headerlink" title="单 reactor 多线程"></a>单 reactor 多线程</h4><p>本方案将Handler对象的业务处理操作交由子线程的Processor执行，而Handler本身只负责数据收发工作。</p><p><img src="/../img/reactor/single-reactor-multi-thread.png" alt="单reactor，多线程"></p><p>reactor对象通过IO多路复用技术监听事件，收到事件后通过 dispatch 进行分发，具体分发给 Acceptor 对象还是 Handler 对象，还要看收到的事件类型；</p><p>如果是连接建立的事件，则交由 Acceptor 对象进行处理，Acceptor 对象会通过 accept 方法 获取连接，并创建一个 Handler 对象来处理后续的响应事件；</p><p>如果不是连接建立事件， 则交由当前连接对应的 Handler 对象来进行响应；</p><p>Handler对象只负责数据收发，它read到数据后交由子线程的Processor对数据进行处理；</p><p>子线程的Processor处理完后，将结果发送给主线程的Handler对象；</p><p>Handler对象将处理的数据进行send；</p><p>单 Reator 多线程的方案优势在于<strong>能够充分利用多核 CPU 的能</strong>，那既然引入多线程，那么自然就带来了多线程竞争资源的问题。</p><p>例如，子线程完成业务处理后，要把结果传递给主线程的 Handler 进行发送，这里涉及共享数据的竞争。</p><p>要避免多线程由于竞争共享资源而导致数据错乱的问题，就需要在操作共享资源前加上互斥锁，以保证任意时间里只有一个线程在操作共享资源，待该线程操作完释放互斥锁后，其他线程才有机会操作共享数据。</p><h4 id="多reactor-多线程"><a href="#多reactor-多线程" class="headerlink" title="多reactor 多线程"></a>多reactor 多线程</h4><p><strong>因为一个 Reactor 对象承担所有事件的监听和响应，而且只在主线程中运行，在面对瞬间高并发的场景时，容易成为性能的瓶颈的地方</strong>。所以产生了<strong>多 Reactor 多进程 &#x2F; 线程</strong>的方案。</p><p><img src="/../img/reactor/multi-reactor-multi-thread.png" alt="多reactor 多线程"></p><p>主线程中的 MainReactor 对象通过 select 监控连接建立事件，收到事件后通过 Acceptor 对象中的 accept 获取连接，将新的连接分配给某个子线程；</p><p>子线程中的 SubReactor 对象将 MainReactor 对象分配的连接加入 select 继续进行监听，并创建一个 Handler 用于处理连接的响应事件。</p><p>如果有新的事件发生时，SubReactor 对象会调用当前连接对应的 Handler 对象来进行响应。</p><p>Handler 对象通过 read -&gt; 业务处理 -&gt; send 的流程来完成完整的业务流程。</p>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>视频网站后端架构</title>
+    <link href="/2023/09/18/my-bilibili/"/>
+    <url>/2023/09/18/my-bilibili/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    <categories>
+      
+      <category>architecture</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>design</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>直播服务架构设计</title>
     <link href="/2023/09/17/live-server/"/>
     <url>/2023/09/17/live-server/</url>

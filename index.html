@@ -239,6 +239,100 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2023/10/13/reactor/" target="_self">
+          高性能网络模式-Reactor
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/10/13/reactor/" target="_self">
+        <div>
+          Reactor 模式详解前言本文章知识需要对BIO，NIO，AIO，以及IO多路复用（select，poll，epoll，kqueue）等技术有一定的了解与认识。 什么是ReactorReactor 模式又叫反应堆模式，是一种常见的高性能的服务器开发模式，它是基于事件驱动的，并且使用了IO多路复用技术。 Reactor 模式的核心思想是将并发性与异步事件处理相结合，通过事件驱动的方式处理输入和输出
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-10-13 20:51" pubdate>
+              2023-10-13
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2023/09/18/my-bilibili/" target="_self">
+          视频网站后端架构
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/09/18/my-bilibili/" target="_self">
+        <div>
+          
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-09-18 17:28" pubdate>
+              2023-09-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/architecture/" class="category-chain-item">architecture</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/design/">#design</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2023/09/17/live-server/" target="_self">
           直播服务架构设计
         </a>
@@ -699,128 +793,6 @@
       <span class="category-chain">
         
   <a href="/categories/SpringCloud/" class="category-chain-item">SpringCloud</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/note/">#note</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/07/25/bean-lifecycle/" target="_self">
-          Spring Bean的生命周期
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/25/bean-lifecycle/" target="_self">
-        <div>
-          Spring Bean的生命周期概括bean的生命周期大致分为以下阶段  构造函数 依赖注入 调用Aware接口 前置处理postProcessBeforeInitialzation 自定义初始化方法 init-method 后置处理postProcessAfterInitialization 销毁destory-method  详细流程  如果 BeanFactoryPostProcessor
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-25 12:27" pubdate>
-              2023-07-25
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/Spring/" class="category-chain-item">Spring</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/note/">#note</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2023/07/20/SpringBoot-boot/" target="_self">
-          SpringBoot启动流程
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/20/SpringBoot-boot/" target="_self">
-        <div>
-          SpringBoot的启动流程启动首先，Spring Boot项目创建完成会默认生成一个名为 **Application 的入口类，我们是通过该类的main方法启动Spring Boot项目的。在main方法中，通过SpringApplication的静态方法，即run方法进行SpringApplication类的实例化操作，然后再针对实例化对象调用另外一个run方法来完成整个项目的初始化和启动。
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-20 09:42" pubdate>
-              2023-07-20
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/Spring/" class="category-chain-item">Spring</a>
   
   
 
